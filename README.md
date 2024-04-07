@@ -15,6 +15,7 @@ The examples demonstrate how to utilize Anedya with Esp32 microcontroller serise
 - Data submission and visualization on the Anedya cloud via HTTPS.
 - Data submission and visualization on the Anedya cloud via MQTT.
 - Submission of device logs.
+- Device control commands via MQTT.
 
 ## Getting Started
 
