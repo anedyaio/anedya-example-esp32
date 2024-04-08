@@ -1,5 +1,6 @@
+[<img src="https://img.shields.io/badge/Anedya-Documentation-blue?style=for-the-badge">](https://docs.anedya.io?utm_source=github&utm_medium=link&utm_campaign=github-examples&utm_content=esp32)
+
 # Smart Home - (command)(mqtt)
-[<img src="https://img.shields.io/badge/anedya-documentation-blue?link=https%3A%2F%2Fdocs.anedya.io">](https://docs.anedya.io)
 
 
 This Arduino sketch allows you to control your device through the Anedya.
@@ -17,7 +18,7 @@ Following steps ouline the overall steps to setup a project. You can read more a
   3. Create a node (e.g., for home- Room1 or study room).
 
  > [!TIP]
- > For more details, Visit anedya [documentation](https://docs.anedya.io)
+ > For more details, Visit anedya [documentation](https://docs.anedya.io?utm_source=github&utm_medium=link&utm_campaign=github-examples&utm_content=esp32)
 
 
 ## Hardware Set-Up
@@ -64,5 +65,5 @@ To include the `timelib.h` library:
 > Looking for Python SDK? Visit [PyPi](https://pypi.org/project/anedya-dev-sdk/) or [Github Repository](https://github.com/anedyaio/anedya-dev-sdk-pyhton)
 
 >[!TIP]
-> For more information, visit [anedya.io](https://anedya.io/)
+> For more information, visit [anedya.io](https://anedya.io/?utm_source=github&utm_medium=link&utm_campaign=github-examples&utm_content=esp32)
  

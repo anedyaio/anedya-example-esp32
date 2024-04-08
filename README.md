@@ -12,10 +12,11 @@ This repository contains example projects for the ESP32 microcontroller utilizin
 The examples demonstrate how to utilize Anedya with Esp32 microcontroller serise:
 
 ### Arduino-IDE
-- Data submission and visualization on the Anedya cloud via HTTPS.
-- Data submission and visualization on the Anedya cloud via MQTT.
-- Submission of device logs.
-- Device control commands via MQTT.
+- Data submission and visualization on the Anedya cloud via HTTP.Click [here](https://github.com/anedyaio/anedya-example-esp32/blob/main/Arduino-IDE/submitData/RoomMonitoring-with-DHT/http/README.md), for more info.
+- Data submission and visualization on the Anedya cloud via MQTT. Click [here](https://github.com/anedyaio/anedya-example-esp32/blob/main/Arduino-IDE/submitData/RoomMonitoring-with-DHT/mqtt/README.md), for more info.
+- Submission of device logs via HTTP. Click [here](https://github.com/anedyaio/anedya-example-esp32/blob/main/Arduino-IDE/submitLog/http/README.md), for more info.
+- Submission of device logs via MQTT. Click [here](https://github.com/anedyaio/anedya-example-esp32/blob/main/Arduino-IDE/submitLog/mqtt/README.md), for more info.
+- Device control commands via MQTT. Click [here](https://github.com/anedyaio/anedya-example-esp32/blob/main/Arduino-IDE/command/mqtt/README.md)
 
 ## Getting Started
 
