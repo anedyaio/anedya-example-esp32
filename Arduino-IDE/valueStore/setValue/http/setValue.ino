@@ -19,11 +19,9 @@
 
 #include <WiFi.h>         // Include the Wifi to handle the wifi connection
 #include <HTTPClient.h>   // Include the HTTPClient library to handle HTTP requests
-#include <ArduinoJson.h>  // Include the Arduino library to make json or abstract the value from the json
-#include <TimeLib.h>      // Include the Time library to handle time synchronization with ATS (Anedya Time Services)
 
 String regionCode = "ap-in-1";                              // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/intro/#region]
-String deviceID = "<DEVICE-ID-UUID>";   // Fill your device Id , that you can get from your node description
+String deviceID = "<PHYSICAL-DEVICE-UUID>";   // Fill your device Id , that you can get from your node description
 String connectionKey = "CONNECTION-KEY";  // Fill your connection key, that you can get from your node description
 
 // Your WiFi credentials
