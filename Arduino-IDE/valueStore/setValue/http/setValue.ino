@@ -21,7 +21,7 @@
 #include <HTTPClient.h>   // Include the HTTPClient library to handle HTTP requests
 
 String regionCode = "ap-in-1";                              // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/intro/#region]
-String deviceID = "<DEVICE-ID-UUID>";   // Fill your device Id , that you can get from your node description
+String deviceID = "<PHYSICAL-DEVICE-UUID>";   // Fill your device Id , that you can get from your node description
 String connectionKey = "CONNECTION-KEY";  // Fill your connection key, that you can get from your node description
 
 // Your WiFi credentials
