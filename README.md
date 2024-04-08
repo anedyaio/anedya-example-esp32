@@ -33,7 +33,7 @@ For detailed documentation, refer to the official documentation [here](https://d
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the [MIT License](https://github.com/anedyaio/anedya-example-esp32/blob/development/LICENSE).
 
 
 > [!TIP]
