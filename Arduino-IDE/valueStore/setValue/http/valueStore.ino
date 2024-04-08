@@ -52,7 +52,7 @@ void setup() {
 void loop() {
 
   String value = "Value";
-  anedya_submitValue("123345", "string", value);  //1 parameter- key, 2 parameter- The value can hold any of the following types of data: string, binary, float, boolean
+  anedya_submitValue("<KEY>", "string", value);  //1 parameter- key, 2 parameter- The value can hold any of the following types of data: string, binary, float, boolean
                                                   //3 parameter- value.  For detailed info, visit-https://docs.anedya.io/valuestore/intro/
 
   delay(15000);
