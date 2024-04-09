@@ -1,26 +1,18 @@
 [<img src="https://img.shields.io/badge/Anedya-Documentation-blue?style=for-the-badge">](https://docs.anedya.io?utm_source=github&utm_medium=link&utm_campaign=github-examples&utm_content=esp32)
 
 
-# Room Monitoring - ESP32+DHT (Submit-Log) (http)
+# Submit-Log - Example
 
-
-
-This Arduino sketch allows you to submit your device log to the Anedya.
 
 > [!WARNING]
 > This code is for hobbyists for learning purposes. Not recommended for production use!!
 
-## Set-Up
 
-> [!IMPORTANT]
-> Prerequisite: Set up the dashboard and fill the connection key and physical device ID in the firmware. For detailed guidance, visit [here](https://github.com/anedyaio/anedya-example-nodemcu/blob/main/README.md) 
+- Follow the HTTP code to synchronize the time and submit the data through the **HTTP protocol**- HyperText Transfer Protocol.
 
-### Code Set-Up 
+- Follow the MQTT code to submit the data through the **MQTT protocol**- Message Queuing Telemetry Protocol.
 
-To submit the the log, use : 
-```
-anedya_submitLog("<REQUEST-ID>","<LOG-MESSAGE>");
-```
+
 
 
 > [!TIP]

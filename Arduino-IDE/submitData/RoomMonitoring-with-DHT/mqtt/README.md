@@ -1,6 +1,7 @@
+[<img src="https://img.shields.io/badge/Anedya-Documentation-blue?style=for-the-badge">](https://docs.anedya.io?utm_source=github&utm_medium=link&utm_campaign=github-examples&utm_content=esp32)
+
 # Room Monitoring - ESP32+DHT (mqtt)
 
-[<img src="https://img.shields.io/badge/anedya-documentation-blue?link=https%3A%2F%2Fdocs.anedya.io">](https://docs.anedya.io)
 
 This Arduino sketch allows you to connect your device to a WiFi network and send data to a server. It fetches the server time and sends data to the anedya.
 
@@ -16,8 +17,8 @@ Following steps outline the overall steps to setup a project. You can read more 
 3. Create variables: temperature and humidity.
 4. Create a node (e.g., for home- Room1 or study room).
 
-> [!TIP]
-> For more details, Visit anedya [documentation](https://docs.anedya.io)
+ > [!TIP]
+ > For more details, Visit anedya [documentation](https://docs.anedya.io?utm_source=github&utm_medium=link&utm_campaign=github-examples&utm_content=esp32)
 
 > [!IMPORTANT]
 > Variable Identifier is essential; fill it accurately.
@@ -89,5 +90,5 @@ To include the DHT library in your project:
 > [!TIP]
 > Looking for Python SDK? Visit [PyPi](https://pypi.org/project/anedya-dev-sdk/) or [Github Repository](https://github.com/anedyaio/anedya-dev-sdk-pyhton)
 
-> [!TIP]
-> For more information, visit [anedya.io](https://anedya.io/)
+>[!TIP]
+> For more information, visit [anedya.io](https://anedya.io/?utm_source=github&utm_medium=link&utm_campaign=github-examples&utm_content=esp32)
