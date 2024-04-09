@@ -19,17 +19,18 @@
 
 #include <WiFi.h>         // Include the Wifi to handle the wifi connection
 #include <HTTPClient.h>   // Include the HTTPClient library to handle HTTP requests
+#include <ArduinoJson.h>  //Include the ArduinoJson library to handle json
 
 String regionCode = "ap-in-1";                              // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/intro/#region]
 String deviceID = "<PHYSICAL-DEVICE-UUID>";   // Fill your device Id , that you can get from your node description
-String connectionKey = "CONNECTION-KEY";  // Fill your connection key, that you can get from your node description
+String connectionKey = "<CONNECTION-KEY>";  // Fill your connection key, that you can get from your node description
 
 // Your WiFi credentials
 char ssid[] = "<SSID>";  // Your WiFi network SSID
 char pass[] = "<PASSWORD>";  // Your WiFi network password
 
 
-void anedya_submitValue(String key, String type, String value);  //function declaration to set the value
+void anedya_setValue(String key, String type, String value);  //function declaration to set the value
 void setup() {
   Serial.begin(115200);  // Initialize serial communication with  your device compatible baud rate
   delay(1500);           // Delay for 1.5 seconds
@@ -50,21 +51,18 @@ void setup() {
 void loop() {
 
   String value = "Value";
-  anedya_submitValue("<KEY>", "string", value);  //1 parameter- key, 2 parameter- The value can hold any of the following types of data: string, binary, float, boolean
+  anedya_setValue("device-key", "string", value);  //1 parameter- key, 2 parameter- The value can hold any of the following types of data: string, binary, float, boolean
                                                   //3 parameter- value.  For detailed info, visit-https://docs.anedya.io/valuestore/intro/
 
   delay(15000);
 }
 
-void anedya_submitValue(String key, String type, String value)  //fusntion to se the set the
+void anedya_setValue(String key, String type, String value)  //fusntion to se the set the
 {
   if (WiFi.status() == WL_CONNECTED) {
     HTTPClient http;                                                                             // Create an instance of HTTPClient
     String senddata_url = "https://device." + regionCode + ".anedya.io/v1/valuestore/setValue";  // Construct the URL for submitting data
 
-    // Get current time and convert it to milliseconds
-    long long current_time = now();                      // Get the current time
-    long long current_time_milli = current_time * 1000;  // Convert current time to milliseconds
 
     // Prepare data payload in JSON format
     http.begin(senddata_url);                            // Begin an HTTP request to the specified URL
@@ -83,10 +81,10 @@ void anedya_submitValue(String key, String type, String value)  //fusntion to se
     if (httpResponseCode > 0) {
       String response = http.getString();  // Get the response from the server
       // Parse the JSON response
-      DynamicJsonDocument jsonSubmit_response(200);
-      deserializeJson(jsonSubmit_response, response);  // Extract the JSON response
+      DynamicJsonDocument valueResponse(200);
+      deserializeJson(valueResponse, response);  // Extract the JSON response
                                                        // Extract the server time from the response
-      int errorcode = jsonSubmit_response["errorcode"];
+      int errorcode = valueResponse["errorcode"];
       if (errorcode == 0) {  // error code  0 means data submitted successfull
         Serial.println("Value Set!");
       } else {  // other errocode means failed to push (like: 4020- mismatch variable identifier...)
