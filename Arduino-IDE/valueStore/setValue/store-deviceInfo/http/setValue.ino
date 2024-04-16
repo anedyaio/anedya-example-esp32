@@ -15,31 +15,28 @@
 
 */
 #include <Arduino.h>
-
-
 #include <WiFi.h>         // Include the Wifi to handle the wifi connection
 #include <HTTPClient.h>   // Include the HTTPClient library to handle HTTP requests
 #include <ArduinoJson.h>  //Include the ArduinoJson library to handle json
 #include <TimeLib.h>
 
+/*-----------------------------------------------------variable section------------------------------------------------------------*/
+//------------------Esseential and sensitive variable---------------------------------
 String regionCode = "ap-in-1";                              // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/intro/#region]
 String deviceID = "<PHYSICAL-DEVICE-UUID>";   // Fill your device Id , that you can get from your node description
 String connectionKey = "<CONNECTION-KEY>";  // Fill your connection key, that you can get from your node description
-
-// Your WiFi credentials
 char ssid[] = "<SSID>";  // Your WiFi network SSID
 char pass[] = "<PASSWORD>";  // Your WiFi network password
 
+//-----------------------------------helper variable--------------------------
 long long updateInterval,timer;   //varibles to insert interval
-
-
 void anedya_setValue(String key, String type, String value);  //function declaration to set the value
 
+/*-----------------------------------------------------setup section------------------------------------------------------------*/
 void setup() {
   Serial.begin(115200);  // Initialize serial communication with  your device compatible baud rate
   delay(1500);           // Delay for 1.5 seconds
 
-  // Connect to WiFi network
   WiFi.begin(ssid, pass);
   Serial.println();
   Serial.print("Connecting to WiFi...");
@@ -51,7 +48,7 @@ void setup() {
   Serial.print("Connected, IP address: ");
   Serial.println(WiFi.localIP());
   timer=millis();
-}
+} 
 
 void loop() {
 
@@ -77,11 +74,11 @@ void anedya_setValue(String key, String type, String value)  //function to set t
 {
   if (WiFi.status() == WL_CONNECTED) {
     HTTPClient http;                                                                             // Create an instance of HTTPClient
-    String senddata_url = "https://device." + regionCode + ".anedya.io/v1/valuestore/setValue";  // Construct the URL for submitting data
+    String setValue_url = "https://device." + regionCode + ".anedya.io/v1/valuestore/setValue";  // Construct the URL for submitting data
 
 
     // Prepare data payload in JSON format
-    http.begin(senddata_url);                            // Begin an HTTP request to the specified URL
+    http.begin(setValue_url);                            // Begin an HTTP request to the specified URL
     http.addHeader("Content-Type", "application/json");  // Add a header specifying the content type as JSON
     http.addHeader("Accept", "application/json");        // Add a header specifying the accepted content type as JSON
     http.addHeader("Auth-mode", "key");                  // Add a header specifying the authentication mode as "key"
@@ -115,4 +112,4 @@ void anedya_setValue(String key, String type, String value)  //function to set t
   } else {
     Serial.println("Error in WiFi connection");  // Print error message indicating WiFi connection failure
   }
-}
+} 
