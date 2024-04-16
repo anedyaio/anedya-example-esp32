@@ -82,7 +82,7 @@ void connectToMQTT();
 void mqttCallback(char *topic, byte *payload, unsigned int length);
 void setDevice_time();                                       // Function to configure the device time with real-time from ATS (Anedya Time Services)
 void anedya_submitData(String datapoint, float sensor_data); // Function to submit data to the Anedya server
-void anedya_sumitLog(String reqID, String Log);
+void anedya_submitLog(String reqID, String Log);
 
 // WiFi and MQTT client initialization
 WiFiClientSecure esp_client;
