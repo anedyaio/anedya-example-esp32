@@ -21,10 +21,10 @@
 #include <TimeLib.h>     // Include the Time library to handle time synchronization with ATS (Anedya Time Services)
 
 String regionCode = "ap-in-1";                   // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/intro/#region]
-String deviceID = "<PHYSICAL-DEVICE-UUID>";   // Fill your device Id , that you can get from your node description
-String connectionKey = "<CONNECTION-KEY>";  // Fill your connection key, that you can get from your node description
-char ssid[] = "<SSID>";  // Your WiFi network SSID
-char pass[] = "<PASSWORD>";  // Your WiFi network password
+const char *deviceID = "<PHYSICAL-DEVICE-UUID>"; // Fill your device Id , that you can get from your node description
+const char *connectionKey = "<CONNECTION-KEY>";  // Fill your connection key, that you can get from your node description
+const char *ssid = "<SSID>";     // Replace with your WiFi name
+const char *pass = "<PASSWORD>"; // Replace with your WiFi password
 
 // MQTT connection settings
 const char *mqtt_broker = "device.ap-in-1.anedya.io";  // MQTT broker address
@@ -92,8 +92,6 @@ mqtt_client.setKeepAlive(60);  // Set the keep alive interval (in seconds) for t
 mqtt_client.setCallback(mqttCallback);  // Set the callback function to be invoked when MQTT messages are received
 connectToMQTT(); // Attempt to establish a connection to the anedya broker
 mqtt_client.setBufferSize(5000);
-long long bufferSize= mqtt_client.getBufferSize();
-Serial.println(bufferSize);
 mqtt_client.subscribe(responseTopic.c_str());  //subscribe to get response
 mqtt_client.subscribe(errorTopic.c_str());    //subscibe to get error
 
@@ -101,7 +99,7 @@ mqtt_client.subscribe(errorTopic.c_str());    //subscibe to get error
 
 void loop()
 {
-  updateInterval=5000;
+  updateInterval=15000;
   if(millis()-timer>=updateInterval){
 
   String boardInfo = "Chip ID:" + String((uint32_t)ESP.getEfuseMac(), HEX) +", "+
