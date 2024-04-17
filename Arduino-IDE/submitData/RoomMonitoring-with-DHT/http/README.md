@@ -1,6 +1,6 @@
 [<img src="https://img.shields.io/badge/Anedya-Documentation-blue?style=for-the-badge">](https://docs.anedya.io?utm_source=github&utm_medium=link&utm_campaign=github-examples&utm_content=esp32)
 
-# Room Monitoring - ESP32+DHT (http)
+# Room Monitoring - Submit-data-with-ESP32+DHT (http)
 
 
 This Arduino sketch allows you to connect your device to a WiFi network and send data to a server. It fetches the server time and sends data to the anedya.
