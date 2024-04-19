@@ -202,7 +202,7 @@ void mqttCallback(char *topic, byte *payload, unsigned int length)
   {
     ledStatus = Response["data"].as<String>();
     responseTimer = millis();
-    commandId = Response["id"].as<String>();
+    commandId = Response["commandId"].as<String>();
     String statusReceivedPayload = "{\"reqId\": \"\",\"commandId\": \"" + commandId + "\",\"status\": \"received\",\"ackdata\": \"\",\"ackdatatype\": \"\"}";
     mqtt_client.publish(statusTopic.c_str(), statusReceivedPayload.c_str());
     processCheck = true;
