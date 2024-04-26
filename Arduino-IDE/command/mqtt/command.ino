@@ -34,7 +34,7 @@ const char *ssid = "<SSID>";     // Replace with your WiFi name
 const char *pass = "<PASSWORD>"; // Replace with your WiFi password
 
 // MQTT connection settings
-const char *mqtt_broker = "device.ap-in-1.anedya.io";                      // MQTT broker address
+const char *mqtt_broker = "mqtt.ap-in-1.anedya.io";                      // MQTT broker address
 const char *mqtt_username = deviceID;                                      // MQTT username
 const char *mqtt_password = connectionkey;                                 // MQTT password
 const int mqtt_port = 8883;                                                // MQTT port
