@@ -2,7 +2,7 @@
 
 # Location Tracking (mqtt)
 
-This Arduino sketch allows you to send real time location to the anedya server.
+This Arduino sketch allows you to send real time location of your device to the anedya server.
 
 > [!WARNING]
 > This code is for hobbyists for learning purposes. Not recommended for production use!!
@@ -43,6 +43,14 @@ Following steps outline the overall steps to setup a project. You can read more 
 
 
 ### TinyGPSPlus.h
+
+1. Open the Arduino IDE.
+2. Go to `Sketch > Include Library > Manage Libraries...`.
+3. In the Library Manager, search for "tinygpsplus".
+4. Click on the ArduinoJson entry in the list.
+5. Click the "Install" button to install the library.
+6. Once installed, you can include the library in your Arduino sketches by adding `#include <TinyGPSPlus.h>` at the top of your sketch.
+
 
 ### ArduinoJson
 
