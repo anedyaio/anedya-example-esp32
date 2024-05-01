@@ -14,8 +14,8 @@ unsigned int gpsLocationSubmit_interval = 2000; // time in second
 String regionCode = "ap-in-1";                                  // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/intro/#region]
 const char *deviceID = "PHYSICAL-DEVICE-UUID";  // Fill your device Id , that you can get from your node description
 const char *connectionkey = "CONNECTION-KEY"; // Fill your connection key, that you can get from your node description
-const char *ssid = "Invesun_2.4GHz";
-const char *pass = "Invesun123com#";
+const char *ssid = "SSID";
+const char *pass = "PASSWORD";
 
 //---------------------GPS-----------------
 static const int RXPin = 5, TXPin = 18;
