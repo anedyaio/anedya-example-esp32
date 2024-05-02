@@ -32,36 +32,35 @@ bool virtual_sensor = true;
 #include <TimeLib.h>     // Include the Time library to handle time synchronization with ATS (Anedya Time Services)
 #include <DHT.h>         // Include the DHT library for humidity and temperature sensor handling
 
-String regionCode = "ap-in-1";              // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/intro/#region]
-String deviceID = "<PHYSICAL-DEVICE-UUID>"; // Fill your device Id , that you can get from your node description
-String connectionKey = "<CONNECTION-KEY>";  // Fill your connection key, that you can get from your node description
+/*-----------------------------------------Variable section------------------------------------------------------------------*/
+//---------------essential variable------------------
+String regionCode = "ap-in-1";              // Specify the Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country codes, visit [https://docs.anedya.io/device/intro/#region]
+String deviceId = "<PHYSICAL-DEVICE-UUID>"; // Fill in your device Id, which you can obtain from your node description
+String connectionKey = "<CONNECTION-KEY";  // Fill in your connection key, which you can obtain from your node description
+const char* ssid = "<SSID>";     // Enter your WiFi network's SSID
+const char* password = "<PASSWORD>"; // Enter your WiFi network's password
 
-// Define the type of DHT sensor (DHT11, DHT21, DHT22, AM2301, AM2302, AM2321)
-#define DHT_TYPE DHT11
-// Define the pin connected to the DHT sensor
-#define DHT_PIN 5 // pin marked as D5 on the ESP32
-float temperature; 
-float humidity; 
+//-----------DHT sensor variable----------------
+#define DHT_TYPE DHT11 // Define the type of DHT sensor (DHT11, DHT21, DHT22, AM2301, AM2302, AM2321)
+#define DHT_PIN 5 // Define the pin connected to the DHT sensor, marked as D5 on the ESP32
+float temperature;  // variable to store temperature readings from the DHT sensor
+float humidity;  //  variable to store humidity readings from the DHT sensor
 
-// Your WiFi credentials
-char ssid[] = "<SSID>";     // Your WiFi network SSID
-char pass[] = "<PASSWORD>"; // Your WiFi network password
-
-
-// Function declarations
+/*------------------------------------Function declarations--------------------------------------------------------------------*/
 void setDevice_time();                                       // Function to configure the device time with real-time from ATS (Anedya Time Services)
 void anedya_submitData(String datapoint, float sensor_data); // Function to submit data to the Anedya server
 
-// Create a DHT object
-DHT dht(DHT_PIN, DHT_TYPE);
+/*------------------------------------Object initializing----------------------------------------------------------------------*/
+DHT dht(DHT_PIN, DHT_TYPE); // Initialize the DHT sensor object with specified pin and type
 
+/*----------------------------------------SETUP SECTION-------------------------------------------------------------------------------*/
 void setup()
 {
-  Serial.begin(115200); // Initialize serial communication with  your device compatible baud rate
-  delay(1500);          // Delay for 1.5 seconds
+  Serial.begin(115200); // Initializing serial communication, fill braud rate according to your device compatible
+  delay(1500);          // Delaying for 1.5 seconds
 
-  // Connect to WiFi network
-  WiFi.begin(ssid, pass);
+  // Connecting to WiFi network
+  WiFi.begin(ssid, password);
   Serial.println();
   Serial.print("Connecting to WiFi...");
   while (WiFi.status() != WL_CONNECTED)
@@ -70,159 +69,159 @@ void setup()
     Serial.print(".");
   }
   Serial.println();
-  Serial.print("Connected, IP address: ");
+  Serial.print("Connecting, IP address: ");
   Serial.println(WiFi.localIP());
 
-  // Connect to ATS(Anedya Time Services) and configure time synchronization
-  setDevice_time(); // Call function to configure time synchronization
+  // Connecting to ATS(Anedya Time Services) and configuring time synchronization
+  setDevice_time(); // Calling function to configure time synchronization
 
-  // Initialize the DHT sensor
+  // Initializing the DHT sensor
   dht.begin();
 }
+
+/*----------------------------------------------LOOP SECTION---------------------------------------------------------------------------*/
 
 void loop()
 {
   if (!virtual_sensor)
   {
-    // Read the temperature and humidity from the DHT sensor
+    // Reading the temperature and humidity from the DHT sensor
     Serial.println("Fetching data from the Physical sensor");
-    temperature = dht.readTemperature();
-    humidity = dht.readHumidity();
+    temperature = dht.readTemperature(); // Reading temperature
+    humidity = dht.readHumidity(); // Reading humidity
     if (isnan(humidity) || isnan(temperature))
     {
-      Serial.println("Failed to read from DHT !"); // Output error message to serial console
+      Serial.println("Failing to read from DHT !"); 
       delay(10000);
       return;
     }
   }
   else
   {
-    // Generate random temperature and humidity values
-    Serial.println("Fetching data from the Virtual sensor");
-    temperature = random(20, 30);
-    humidity = random(60, 80);
+    // Generating random temperature and humidity values
+    Serial.println("Fetching data from the Virtual sensor"); 
+    temperature = random(20, 30); 
+    humidity = random(60, 80); 
   }
-  Serial.print("Temperature : ");
-  Serial.println(temperature);
-  // Submit sensor data to Anedya server
-  anedya_submitData("temperature", temperature); // submit data to the Anedya
+  Serial.print("Temperature : "); 
+  Serial.println(temperature); 
+  // Submitting sensor data to Anedya server
+  anedya_submitData("temperature", temperature); // submitting temperature data to the Anedya
 
-  Serial.print("Humidity : ");
-  Serial.println(humidity);
-  anedya_submitData("humidity", humidity); // submit data to the Anedya
+  Serial.print("Humidity : "); 
+  Serial.println(humidity); 
+  anedya_submitData("humidity", humidity); // submitting humidity data to the Anedya
 
-  delay(15000);
+  delay(15000); 
 }
-//<---------------------------------------------------------------------------------------------------------------------------->
-// Function to configure time synchronization with Anedya server
+
+/*<--------------------------------------Function Defination section------------------------------------------------------------------------->*/
+// ----------------------------Function to configure time synchronization with Anedya server-----------
 // For more info, visit [https://docs.anedya.io/devicehttpapi/http-time-sync/]
 void setDevice_time()
 {
   String time_url = "https://device." + regionCode + ".anedya.io/v1/time"; // url to fetch the real time from ther ATS (Anedya Time Services)
 
-  // Attempt to synchronize time with Anedya server
   Serial.println("Time synchronizing......");
-  int timeCheck = 1; // iteration to re-sync to ATS (Anedya Time Services), in case of failed attempt
+  int timeCheck = 1; // iterating to re-sync to ATS (Anedya Time Services), in case of failed attempt
   while (timeCheck)
   {
-    // Get the device send time
     long long deviceSendTime = millis();
 
-    // Prepare the request payload
-    StaticJsonDocument<200> requestPayload;            // Declare a JSON document with a capacity of 200 bytes
-    requestPayload["deviceSendTime"] = deviceSendTime; // Add a key-value pair to the JSON document
-    String jsonPayload;                                // Declare a string to store the serialized JSON payload
-    serializeJson(requestPayload, jsonPayload);        // Serialize the JSON document into a string
+    // Preparing the request payload
+    StaticJsonDocument<200> requestPayload;            // Declaring a JSON document with a capacity of 200 bytes
+    requestPayload["deviceSendTime"] = deviceSendTime; // Adding a key-value pair to the JSON document
+    String jsonPayload;                                // Declaring a string to store the serialized JSON payload
+    serializeJson(requestPayload, jsonPayload);        // Serializing the JSON document into a string
 
-    HTTPClient http;                                    // Create an instance of HTTPClient
-    http.begin(time_url);                               // Begin an HTTP request to the specified URL
-    http.addHeader("Content-Type", "application/json"); // Add a header specifying the content type as JSON
+    HTTPClient http;                                    // Creating an instance of HTTPClient
+    http.begin(time_url);                               // Beginning an HTTP request to the specified URL
+    http.addHeader("Content-Type", "application/json"); // Adding a header specifying the content type as JSON
 
-    int httpResponseCode = http.POST(jsonPayload); // Send a POST request with the serialized JSON payload
+    int httpResponseCode = http.POST(jsonPayload); // Sending a POST request with the serialized JSON payload
 
-    // Check if the request was successful
+    // Checking if the request was successful
     if (httpResponseCode != 200)
     {
-      Serial.println("Failed to fetch server time! Retrying........"); // Print error message indicating failure to fetch server time
-      delay(2000);                                    // Delay for 2 seconds
+      Serial.println("Failing to fetch server time! Retrying........"); // Printing an error message indicating failure to fetch server time
+      delay(2000);                                    // Delaying for 2 seconds in case of failure
     }
     else if (httpResponseCode == 200)
     {
-      timeCheck = 0; // Set timeCheck to 0 to indicate successful time synchronization
-      Serial.println("synchronized!");
+      timeCheck = 0; // Setting timeCheck to 0 to indicate successful time synchronization
+      Serial.println("synchronizing!");
     }
 
-    // Parse the JSON response
-    DynamicJsonDocument jsonResponse(200);           // Declare a JSON document with a capacity of 200 bytes
-    deserializeJson(jsonResponse, http.getString()); // Deserialize the JSON response from the server into the JSON document
+    // Parsing the JSON response
+    DynamicJsonDocument jsonResponse(200);           // Declaring a JSON document with a capacity of 200 bytes
+    deserializeJson(jsonResponse, http.getString()); // Deserializing the JSON response from the server into the JSON document
 
-    long long serverReceiveTime = jsonResponse["serverReceiveTime"]; // Get the server receive time from the JSON document
-    long long serverSendTime = jsonResponse["serverSendTime"];       // Get the server send time from the JSON document
+    long long serverReceiveTime = jsonResponse["serverReceiveTime"]; // Getting the server receive time from the JSON document
+    long long serverSendTime = jsonResponse["serverSendTime"];       // Getting the server send time from the JSON document
 
-    // Compute the current time
-    long long deviceRecTime = millis();                                                                // Get the device receive time
-    long long currentTime = (serverReceiveTime + serverSendTime + deviceRecTime - deviceSendTime) / 2; // Compute the current time
-    long long currentTimeSeconds = currentTime / 1000;                                                 // Convert current time to seconds
+    // Computing the current time
+    long long deviceRecTime = millis();                                                             
+    long long currentTime = (serverReceiveTime + serverSendTime + deviceRecTime - deviceSendTime) / 2; // Computing the current time
+    long long currentTimeSeconds = currentTime / 1000;                                                 // Converting current time to seconds
 
-    // Set device time
-    setTime(currentTimeSeconds); // Set the device time based on the computed current time
+    // Setting device time
+    setTime(currentTimeSeconds); // Setting the device time based on the computed current time
   }
 }
 
-// Function to submit data to Anedya server
+//---------------------------------- Function for submitting data-----------------------------------
 // For more info, visit [https://docs.anedya.io/devicehttpapi/submitdata/]
 void anedya_submitData(String datapoint, float sensor_data)
 {
   if (WiFi.status() == WL_CONNECTED)
   {
-    HTTPClient http;                                                                   // Create an instance of HTTPClient
-    String senddata_url = "https://device." + regionCode + ".anedya.io/v1/submitData"; // Construct the URL for submitting data
+    HTTPClient http;                                                                   // Creating an instance of HTTPClient
+    String submitData_url = "https://device." + regionCode + ".anedya.io/v1/submitData"; // Constructing the URL for submitting data
 
-    // Get current time and convert it to milliseconds
-    long long current_time = now();                     // Get the current time
-    long long current_time_milli = current_time * 1000; // Convert current time to milliseconds
+    // Getting current device time and converting it to milliseconds
+    long long current_time = now();                     // Getting the current time
+    long long current_time_milli = current_time * 1000; // Converting current time to milliseconds
 
-    // Prepare data payload in JSON format
-    http.begin(senddata_url);                           // Begin an HTTP request to the specified URL
-    http.addHeader("Content-Type", "application/json"); // Add a header specifying the content type as JSON
-    http.addHeader("Accept", "application/json");       // Add a header specifying the accepted content type as JSON
-    http.addHeader("Auth-mode", "key");                 // Add a header specifying the authentication mode as "key"
-    http.addHeader("Authorization", connectionKey);     // Add a header containing the authorization key
+    // Preparing data payload in JSON format
+    http.begin(submitData_url);                           // Beginning an HTTP request to the specified URL
+    http.addHeader("Content-Type", "application/json"); // Adding a header specifying the content type as JSON
+    http.addHeader("Accept", "application/json");       // Adding a header specifying the accepted content type as JSON
+    http.addHeader("Auth-mode", "key");                 // Adding a header specifying the authentication mode as "key"
+    http.addHeader("Authorization", connectionKey);     // Adding a header containing the authorization key
 
-    // Construct the JSON payload with sensor data and timestamp
-    String jsonStr = "{\"data\":[{\"variable\": \"" + datapoint + "\",\"value\":" + String(sensor_data) + ",\"timestamp\":" + String(current_time_milli) + "}]}";
+    // Constructing the JSON payload with sensor data and timestamp
+    String submitData_str = "{\"data\":[{\"variable\": \"" + datapoint + "\",\"value\":" + String(sensor_data) + ",\"timestamp\":" + String(current_time_milli) + "}]}";
 
-    // Send the POST request with the JSON payload to Anedya server
-    int httpResponseCode = http.POST(jsonStr);
+    // Sending the POST request with the JSON payload to Anedya server
+    int httpResponseCode = http.POST(submitData_str);
 
-    // Check if the request was successful
+    // Checking if the request was successful
     if (httpResponseCode > 0)
     {
-      String response = http.getString(); // Get the response from the server
-      // Parse the JSON response
+      String response = http.getString(); // Getting the response from the server
+      // Parsing the JSON response
       DynamicJsonDocument jsonSubmit_response(200);
-      deserializeJson(jsonSubmit_response, response); // Extract the JSON response
-                                                      // Extract the server time from the response
+      deserializeJson(jsonSubmit_response, response); // Extracting the JSON response
       int errorcode = jsonSubmit_response["errorcode"];
-      if (errorcode == 0)
-      { // error code  0 means data submitted successfull
+      if (errorcode == 0) // Error code 0 indicates data submitted successfully
+      { 
         Serial.println("Data pushed to Anedya Cloud!");
       }
       else
-      { // other errocode means failed to push (like: 4020- mismatch variable identifier...)
+      { 
         Serial.println("Failed to push!!");
-        Serial.println(response); // Print the response
-      }                           // Print the response
-    }
+        Serial.println(response);  //error code4020 indicate -unknown variable identifier
+      }   
+    }                        
     else
     {
-      Serial.print("Error on sending POST: "); // Print error message indicating failure to send POST request
-      Serial.println(httpResponseCode);        // Print the HTTP response code
+      Serial.print("Error on sending POST: "); // Printing error message indicating failure to send POST request
+      Serial.println(httpResponseCode);        // Printing the HTTP response code
     }
-    http.end(); // End the HTTP client session
+    http.end(); // Ending the HTTP client session
   }
   else
   {
-    Serial.println("Error in WiFi connection"); // Print error message indicating WiFi connection failure
+    Serial.println("Error in WiFi connection"); // Printing error message indicating WiFi connection failure
   }
 }

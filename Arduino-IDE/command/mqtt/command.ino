@@ -34,7 +34,7 @@ const char *ssid = "<SSID>";     // Replace with your WiFi name
 const char *pass = "<PASSWORD>"; // Replace with your WiFi password
 
 // MQTT connection settings
-const char *mqtt_broker = "device.ap-in-1.anedya.io";                      // MQTT broker address
+const char *mqtt_broker = "mqtt.ap-in-1.anedya.io";                      // MQTT broker address
 const char *mqtt_username = deviceID;                                      // MQTT username
 const char *mqtt_password = connectionkey;                                 // MQTT password
 const int mqtt_port = 8883;                                                // MQTT port
@@ -202,7 +202,7 @@ void mqttCallback(char *topic, byte *payload, unsigned int length)
   {
     ledStatus = Response["data"].as<String>();
     responseTimer = millis();
-    commandId = Response["id"].as<String>();
+    commandId = Response["commandId"].as<String>();
     String statusReceivedPayload = "{\"reqId\": \"\",\"commandId\": \"" + commandId + "\",\"status\": \"received\",\"ackdata\": \"\",\"ackdatatype\": \"\"}";
     mqtt_client.publish(statusTopic.c_str(), statusReceivedPayload.c_str());
     processCheck = true;

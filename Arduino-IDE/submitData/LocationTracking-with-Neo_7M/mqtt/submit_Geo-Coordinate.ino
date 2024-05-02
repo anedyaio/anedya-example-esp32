@@ -1,55 +1,38 @@
-/*
 
-                            Room Monitoring Using ESP32 + DHT sensor (mqtt)
-                Disclaimer: This code is for hobbyists for learning purposes. Not recommended for production use!!
-
-                            # Dashboard Setup
-                             - Create account and login to the dashboard
-                             - Create new project.
-                             - Create variables: temperature and humidity.
-                             - Create a node (e.g., for home- Room1 or study room).
-                            Note: Variable Identifier is essential; fill it accurately.
-
-                            # Hardware Setup
-                             - Properly identify your sensor's pins.
-                             - Connect sensor VCC pin to 3V3.
-                             - Connect sensor GND pin to GND.
-                             - Connect sensor signal pin to D5.
-
-                  Note: The code is tested on the "Esp-32 Wifi, Bluetooth, Dual Core Chip Development Board (ESP-WROOM-32)"
-
-                                                                                           Dated: 26-March-2024
- 
-*/ 
 #include <Arduino.h>
 
-// Emulate Hardware Sensor?
-bool virtual_sensor = true;
+unsigned int gpsLocationSubmit_interval = 2000; // time in second
 
-#include <WiFi.h>            //library to handle wifi connection 
+#include <WiFi.h>             //library to handle wifi connection
 #include <PubSubClient.h>     // library to establish mqtt connection
-#include <WiFiClientSecure.h>  //library to maintain the secure connection 
-#include <ArduinoJson.h> // Include the Arduino library to make json or abstract the value from the json
-#include <TimeLib.h>     // Include the Time library to handle time synchronization with ATS (Anedya Time Services)
-#include <DHT.h>         // Include the DHT library for humidity and temperature sensor handling
+#include <WiFiClientSecure.h> //library to maintain the secure connection
+#include <ArduinoJson.h>      // Include the Arduino library to make json or abstract the value from the json
+#include <TimeLib.h>          // Include the Time library to handle time synchronization with ATS (Anedya Time Services)
+#include <TinyGPSPlus.h>
+#include <SoftwareSerial.h>
 
-String regionCode = "ap-in-1";                   // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/intro/#region]
-const char *deviceID = "<PHYSICAL-DEVICE-UUID>"; // Fill your device Id , that you can get from your node description
-const char *connectionkey = "<CONNECTION-KEY>";  // Fill your connection key, that you can get from your node description
-// WiFi credentials
-const char *ssid = "<SSID>";     // Replace with your WiFi name
-const char *pass = "<PASSWORD>"; // Replace with your WiFi password
+String regionCode = "ap-in-1";                                  // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/intro/#region]
+const char *deviceID = "PHYSICAL-DEVICE-UUID";  // Fill your device Id , that you can get from your node description
+const char *connectionkey = "CONNECTION-KEY"; // Fill your connection key, that you can get from your node description
+const char *ssid = "SSID";
+const char *pass = "PASSWORD";
 
-// MQTT connection settings
-const char *mqtt_broker = "mqtt.ap-in-1.anedya.io";  // MQTT broker address
-const char *mqtt_username = deviceID;  // MQTT username
-const char *mqtt_password = connectionkey;  // MQTT password
-const int mqtt_port = 8883;  // MQTT port
-String responseTopic = "$anedya/device/" + String(deviceID) + "/response";  // MQTT topic for device responses
-String errorTopic = "$anedya/device/" + String(deviceID) + "/errors";  // MQTT topic for device errors
+//---------------------GPS-----------------
+static const int RXPin = 5, TXPin = 18;
+
+static const uint32_t GPSBaud = 9600;
+double latitude, longitude;
+
+// -------------------------MQTT connection settings---------------------
+const char *mqtt_broker = "mqtt.ap-in-1.anedya.io";                        // MQTT broker address
+const char *mqtt_username = deviceID;                                      // MQTT username
+const char *mqtt_password = connectionkey;                                 // MQTT password
+const int mqtt_port = 8883;                                                // MQTT port
+String responseTopic = "$anedya/device/" + String(deviceID) + "/response"; // MQTT topic for device responses
+String errorTopic = "$anedya/device/" + String(deviceID) + "/errors";      // MQTT topic for device errors
 
 // Root CA Certificate
-//fill anedya root certificate. it can be get from [https://docs.anedya.io/device/mqtt-endpoints/#tls]
+// fill anedya root certificate. it can be get from [https://docs.anedya.io/device/mqtt-endpoints/#tls]
 const char *ca_cert = R"EOF(                           
 -----BEGIN CERTIFICATE-----
 MIICDDCCAbOgAwIBAgITQxd3Dqj4u/74GrImxc0M4EbUvDAKBggqhkjOPQQDAjBL
@@ -66,33 +49,31 @@ CjAIMAYGBFUdIAAwCgYIKoZIzj0EAwIDRwAwRAIgR/rWSG8+L4XtFLces0JYS7bY
 -----END CERTIFICATE-----
 )EOF";
 
-long long submitTimer;   //timer variable for request handling
-String timeRes, submitRes;  //variable to store the response 
+//-----------------------------Helper variable------------------------------
+long long submitTimer, submitInterval; // timer variable for request handling
+String timeRes, submitRes;             // variable to store the response
 
-// Define the type of DHT sensor (DHT11, DHT21, DHT22, AM2301, AM2302, AM2321)
-#define DHT_TYPE DHT11
-// Define the pin connected to the DHT sensor
-#define DHT_PIN 5 // pin marked as D5 on the ESP32
-float temperature;
-float humidity;
-
-// Function Declarations
-void connectToMQTT();
-void mqttCallback(char *topic, byte *payload, unsigned int length);
-void setDevice_time();                                       // Function to configure the device time with real-time from ATS (Anedya Time Services)
-void anedya_submitData(String datapoint, float sensor_data); // Function to submit data to the Anedya server
-
+//---------------------------object initiazation--------------------------
+// The TinyGPSPlus object
+TinyGPSPlus gps;
+// The serial connection to the GPS device
+SoftwareSerial ss(RXPin, TXPin);
 // WiFi and MQTT client initialization
 WiFiClientSecure esp_client;
 PubSubClient mqtt_client(esp_client);
 
-// Create a DHT object
-DHT dht(DHT_PIN, DHT_TYPE);
+// Function Declarations
+void connectToMQTT();
+void mqttCallback(char *topic, byte *payload, unsigned int length);
+void setDevice_time();                                                                 // Function to configure the device time with real-time from ATS (Anedya Time Services)
+void anedya_submitLocation(String VARIABLE_IDENTIFIER, double LATITUDE, double LONGITUDE); // Function to submit data to the Anedya server
 
 void setup()
 {
   Serial.begin(115200); // Initialize serial communication with  your device compatible baud rate
-  delay(1500);          // Delay for 1.5 seconds
+  delay(150);           // Delay for 1.5 seconds
+  ss.begin(GPSBaud);
+  delay(150); // Delay for 1.5 seconds
 
   // Connect to WiFi network
   WiFi.begin(ssid, pass);
@@ -108,64 +89,63 @@ void setup()
   Serial.println(WiFi.localIP());
 
   submitTimer = millis();
+  submitInterval = millis();
   // Set Root CA certificate
   esp_client.setCACert(ca_cert);
-mqtt_client.setServer(mqtt_broker, mqtt_port);  // Set the MQTT server address and port for the MQTT client to connect to anedya broker
-mqtt_client.setKeepAlive(60);  // Set the keep alive interval (in seconds) for the MQTT connection to maintain connectivity
-mqtt_client.setCallback(mqttCallback);  // Set the callback function to be invoked when MQTT messages are received
-connectToMQTT(); // Attempt to establish a connection to the anedya broker
+  mqtt_client.setServer(mqtt_broker, mqtt_port); // Set the MQTT server address and port for the MQTT client to connect to anedya broker
+  mqtt_client.setKeepAlive(60);                  // Set the keep alive interval (in seconds) for the MQTT connection to maintain connectivity
+  mqtt_client.setCallback(mqttCallback);         // Set the callback function to be invoked when MQTT messages are received
+  connectToMQTT();                               // Attempt to establish a connection to the anedya broker
 
-mqtt_client.subscribe(responseTopic.c_str());  //subscribe to get response
-mqtt_client.subscribe(errorTopic.c_str());    //subscibe to get error
+  mqtt_client.subscribe(responseTopic.c_str()); // subscribe to get response
+  mqtt_client.subscribe(errorTopic.c_str());    // subscibe to get error
 
   setDevice_time();
-  // Initialize the DHT sensor
-  dht.begin();
 }
 
 void loop()
 {
-
-  if (!virtual_sensor)
+  while (ss.available() > 0)
   {
-    // Read the temperature and humidity from the DHT sensor
-    Serial.println("Fetching data from the Physical sensor");
-    temperature = dht.readTemperature();
-    humidity = dht.readHumidity();
-    if (isnan(humidity) || isnan(temperature))
+    if (gps.encode(ss.read()))
     {
-      Serial.println("Failed to read from DHT !"); // Output error message to serial console
-      delay(10000);
-      return;
+      if (gps.location.isValid())
+      {
+        latitude = gps.location.lat();
+        longitude = gps.location.lng();
+      }
+      else
+      {
+        Serial.print(F("INVALID"));
+        latitude = 0;
+        longitude = 0;
+      }
+    }
+    if ((millis() - submitInterval > gpsLocationSubmit_interval) && latitude != 0)
+    {
+      Serial.print("Location : ");
+      Serial.print(latitude,7);
+      Serial.print(F(","));
+      Serial.println(longitude,7);
+
+      anedya_submitLocation("location", latitude, longitude);
+      latitude = 0;
+      longitude = 0;
+      submitInterval = millis();
     }
   }
-  else
+  if (millis() > 5000 && gps.charsProcessed() < 10)
   {
-    // Generate random temperature and humidity values
-    Serial.println("Fetching data from the Virtual sensor");
-    temperature = random(20, 30);
-    humidity = random(60, 80);
+    Serial.println(F("No GPS detected: check wiring."));
+    delay(4000);
   }
-  Serial.print("Temperature : ");
-  Serial.println(temperature);
-
-  // Submit sensor data to Anedya server
-  anedya_submitData("temperature", temperature); // submit data to the Anedya
-
-  Serial.print("Humidity : ");
-  Serial.println(humidity);
-
-  anedya_submitData("humidity", humidity); // submit data to the Anedya
-
-  Serial.println("-------------------------------------------------");
-  delay(5000);
 }
 //<---------------------------------------------------------------------------------------------------------------------------->
 void connectToMQTT()
 {
   while (!mqtt_client.connected())
   {
-    const char* client_id = deviceID;
+    const char *client_id = deviceID;
     Serial.print("Connecting to Anedya Broker....... ");
     if (mqtt_client.connect(client_id, mqtt_username, mqtt_password))
     {
@@ -238,7 +218,7 @@ void setDevice_time()
         serializeJson(requestPayload, jsonPayload);        // Serialize the JSON document into a string
         // Convert String object to pointer to a string literal
         const char *jsonPayloadLiteral = jsonPayload.c_str();
-      mqtt_client.publish(mqtt_topic, jsonPayloadLiteral);
+        mqtt_client.publish(mqtt_topic, jsonPayloadLiteral);
       } // if end
 
       if (timeRes != "")
@@ -270,9 +250,9 @@ void setDevice_time()
   } // mqtt connect check end
 } // set device time function end
 
-// Function to submit data to Anedya server
+// Function to submit Location to Anedya server
 // For more info, visit [https://docs.anedya.io/devicehttpapi/submitdata/]
-void anedya_submitData(String datapoint, float sensor_data)
+void anedya_submitLocation(String VARIABLE_IDENTIFIER, double LATITUDE, double LONGITUDE)
 {
   boolean check = true;
 
@@ -282,10 +262,8 @@ void anedya_submitData(String datapoint, float sensor_data)
   {
     if (mqtt_client.connected())
     {
-
-      if (millis() - submitTimer >= 2000)
+      if (millis() - submitTimer > 2000)
       {
-
         submitTimer = millis();
         // Get current time and convert it to milliseconds
         long long current_time = now();                     // Get the current time
@@ -293,8 +271,11 @@ void anedya_submitData(String datapoint, float sensor_data)
 
         // Construct the JSON payload with sensor data and timestamp
 
-        String jsonStr = "{\"data\":[{\"variable\": \"" + datapoint + "\",\"value\":" + String(sensor_data) + ",\"timestamp\":" + String(current_time_milli) + "}]}";
-        const char *submitJsonPayload = jsonStr.c_str();
+        char jsonstr[1000];
+        sprintf(jsonstr, "{\"data\":[{\"variable\": \"%s\",\"value\":{\"lat\":%0.7f ,\"long\": %0.7f },\"timestamp\": %lld }]}", VARIABLE_IDENTIFIER, latitude, longitude, current_time_milli);
+        Serial.println(jsonstr);
+
+        const char *submitJsonPayload = jsonstr;
         mqtt_client.publish(submitTopic, submitJsonPayload);
       }
       mqtt_client.loop();
@@ -321,7 +302,7 @@ void anedya_submitData(String datapoint, float sensor_data)
           Serial.println(submitRes);
         }
         check = false;
-        submitTimer=5000;
+        submitTimer = 5000;
       }
     }
     else
@@ -330,3 +311,5 @@ void anedya_submitData(String datapoint, float sensor_data)
     } // mqtt connect check end
   }
 }
+
+

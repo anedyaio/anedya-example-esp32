@@ -1,6 +1,6 @@
 [<img src="https://img.shields.io/badge/Anedya-Documentation-blue?style=for-the-badge">](https://docs.anedya.io?utm_source=github&utm_medium=link&utm_campaign=github-examples&utm_content=esp32)
 
-# setValue - Example (http)
+# Store-Device-Info - Example-value-store (mqtt)
 
 
 This Arduino sketch allows you to set the your value to the anedya dashboard.
@@ -19,10 +19,11 @@ Following steps outline the overall steps to setup a project. You can read more 
 ### Code Setup
 
 - Fill the and device id and connection key
-- `anedya_valueStore`
-  - 1 Parameter- Fill the key.
-  - 2 Paramter- Select and enter the data type,  `The value can hold any of the following types of data: string, binary, float, boolean`
-  - 3 Parameter-  load value/message.
+- `anedya_valueStore("<key>","<data-type>", "<ValuePayload")`
+fill:-
+  - 1 Parameter- key.
+  - 2 Paramter- Data type,  `The value can hold any of the following types of data: string, binary, float, boolean`
+  - 3 Parameter- value/message.
 
  > [!TIP]
  > For more details, Visit anedya [documentation](https://docs.anedya.io?utm_source=github&utm_medium=link&utm_campaign=github-examples&utm_content=esp32)
