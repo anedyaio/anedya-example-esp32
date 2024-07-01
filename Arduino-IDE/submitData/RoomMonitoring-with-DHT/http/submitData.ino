@@ -34,7 +34,7 @@ bool virtual_sensor = true;
 
 /*-----------------------------------------Variable section------------------------------------------------------------------*/
 //---------------essential variable------------------
-String regionCode = "ap-in-1";              // Specify the Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country codes, visit [https://docs.anedya.io/device/intro/#region]
+String regionCode = "ap-in-1";              // Specify the Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country codes, visit [https://docs.anedya.io/device/#region]
 String deviceId = "<PHYSICAL-DEVICE-UUID>"; // Fill in your device Id, which you can obtain from your node description
 String connectionKey = "<CONNECTION-KEY";  // Fill in your connection key, which you can obtain from your node description
 const char* ssid = "<SSID>";     // Enter your WiFi network's SSID
@@ -117,7 +117,7 @@ void loop()
 
 /*<--------------------------------------Function Defination section------------------------------------------------------------------------->*/
 // ----------------------------Function to configure time synchronization with Anedya server-----------
-// For more info, visit [https://docs.anedya.io/devicehttpapi/http-time-sync/]
+// For more info, visit [https://docs.anedya.io/device/api/http-time-sync/]
 void setDevice_time()
 {
   String time_url = "https://device." + regionCode + ".anedya.io/v1/time"; // url to fetch the real time from ther ATS (Anedya Time Services)

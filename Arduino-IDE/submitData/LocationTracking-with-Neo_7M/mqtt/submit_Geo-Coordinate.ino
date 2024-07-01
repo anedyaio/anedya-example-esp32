@@ -11,7 +11,7 @@ unsigned int gpsLocationSubmit_interval = 2000; // time in second
 #include <TinyGPSPlus.h>
 #include <SoftwareSerial.h>
 
-String regionCode = "ap-in-1";                                  // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/intro/#region]
+String regionCode = "ap-in-1";                                  // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/#region]
 const char *deviceID = "PHYSICAL-DEVICE-UUID";  // Fill your device Id , that you can get from your node description
 const char *connectionkey = "CONNECTION-KEY"; // Fill your connection key, that you can get from your node description
 const char *ssid = "SSID";
@@ -184,7 +184,7 @@ void mqttCallback(char *topic, byte *payload, unsigned int length)
   }
 }
 // Function to configure time synchronization with Anedya server
-// For more info, visit [https://docs.anedya.io/devicehttpapi/http-time-sync/]
+// For more info, visit [https://docs.anedya.io/device/api/http-time-sync/]
 void setDevice_time()
 {
   String timeTopic = "$anedya/device/" + String(deviceID) + "/time/json";

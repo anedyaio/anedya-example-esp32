@@ -26,7 +26,7 @@
 #include <ArduinoJson.h>      // Include the Arduino library to make json or abstract the value from the json
 #include <TimeLib.h>          // Include the Time library to handle time synchronization with ATS (Anedya Time Services)
 
-String regionCode = "ap-in-1";                   // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/intro/#region]
+String regionCode = "ap-in-1";                   // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/#region]
 const char *deviceID = "<PHYSICAL-DEVICE-UUID>"; // Fill your device Id , that you can get from your node description
 const char *connectionkey = "<CONNECTION-KEY>";  // Fill your connection key, that you can get from your node description
 // WiFi credentials
@@ -216,7 +216,7 @@ void mqttCallback(char *topic, byte *payload, unsigned int length)
   }
 }
 // Function to configure time synchronization with Anedya server
-// For more info, visit [https://docs.anedya.io/devicehttpapi/http-time-sync/]
+// For more info, visit [https://docs.anedya.io/device/api/http-time-sync/]
 void setDevice_time()
 {
   String timeTopic = "$anedya/device/" + String(deviceID) + "/time/json"; // time topic wil provide the current time from the anedya server

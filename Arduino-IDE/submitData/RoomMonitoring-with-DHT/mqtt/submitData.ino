@@ -33,7 +33,7 @@ bool virtual_sensor = true;
 #include <TimeLib.h>     // Include the Time library to handle time synchronization with ATS (Anedya Time Services)
 #include <DHT.h>         // Include the DHT library for humidity and temperature sensor handling
 
-String regionCode = "ap-in-1";                   // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/intro/#region]
+String regionCode = "ap-in-1";                   // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/#region]
 const char *deviceID = "<PHYSICAL-DEVICE-UUID>"; // Fill your device Id , that you can get from your node description
 const char *connectionkey = "<CONNECTION-KEY>";  // Fill your connection key, that you can get from your node description
 // WiFi credentials
@@ -204,7 +204,7 @@ void mqttCallback(char *topic, byte *payload, unsigned int length)
   }
 }
 // Function to configure time synchronization with Anedya server
-// For more info, visit [https://docs.anedya.io/devicehttpapi/http-time-sync/]
+// For more info, visit [https://docs.anedya.io/device/api/http-time-sync/]
 void setDevice_time()
 {
   String timeTopic = "$anedya/device/" + String(deviceID) + "/time/json";

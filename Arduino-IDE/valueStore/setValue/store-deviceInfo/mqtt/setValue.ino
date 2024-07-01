@@ -20,7 +20,7 @@
 #include <ArduinoJson.h> // Include the Arduino library to make json or abstract the value from the json
 #include <TimeLib.h>     // Include the Time library to handle time synchronization with ATS (Anedya Time Services)
 
-String regionCode = "ap-in-1";                   // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/intro/#region]
+String regionCode = "ap-in-1";                   // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/#region]
 const char *deviceID = "<PHYSICAL-DEVICE-UUID>"; // Fill your device Id , that you can get from your node description
 const char *connectionKey = "<CONNECTION-KEY>";  // Fill your connection key, that you can get from your node description
 const char *ssid = "<SSID>";     // Replace with your WiFi name
