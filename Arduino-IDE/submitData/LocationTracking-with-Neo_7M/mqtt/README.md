@@ -41,6 +41,13 @@ Following steps outline the overall steps to setup a project. You can read more 
 
 ## Dependencies
 
+### EspSoftwareSerial 
+1. Open the Arduino IDE.
+2. Go to `Sketch > Include Library > Manage Libraries...`.
+3. In the Library Manager, search for "EspSoftwareSerial" 
+4. Click on the EspSoftwareSerialp by drik Kaar and Peter Lerup.
+5. Click the "Install" button to install the library.
+6. Once installed, you can include the library in your Arduino sketches by adding `#include <EspSoftwareSerial.h>` at the top of your sketch.
 
 ### TinyGPSPlus.h
 
