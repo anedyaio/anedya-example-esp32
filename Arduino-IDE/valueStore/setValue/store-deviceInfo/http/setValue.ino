@@ -22,7 +22,7 @@
 
 /*-----------------------------------------------------variable section------------------------------------------------------------*/
 //------------------Esseential and sensitive variable---------------------------------
-String regionCode = "ap-in-1";                              // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/intro/#region]
+String regionCode = "ap-in-1";                              // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/#region]
 String deviceID = "<PHYSICAL-DEVICE-UUID>";   // Fill your device Id , that you can get from your node description
 String connectionKey = "<CONNECTION-KEY>";  // Fill your connection key, that you can get from your node description
 char ssid[] = "<SSID>";  // Your WiFi network SSID
