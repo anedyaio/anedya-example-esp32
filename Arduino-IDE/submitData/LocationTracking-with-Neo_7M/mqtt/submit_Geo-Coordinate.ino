@@ -11,11 +11,11 @@ unsigned int gpsLocationSubmit_interval = 2000; // time in second
 #include <TinyGPSPlus.h>
 #include <SoftwareSerial.h>
 
-String regionCode = "ap-in-1";                                  // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/#region]
-const char *deviceID = "PHYSICAL-DEVICE-UUID";  // Fill your device Id , that you can get from your node description
-const char *connectionkey = "CONNECTION-KEY"; // Fill your connection key, that you can get from your node description
+String REGION_CODE = "ap-in-1";                 // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/#region]
+const char *CONNECTION_KEY = "CONNECTION_KEY";  // Fill your connection key, that you can get from your node description
+const char *DEVICE_ID = "PHYSICAL_DEVICE_ID"; // Fill your device Id , that you can get from your node description
 const char *ssid = "SSID";
-const char *pass = "PASSWORD";
+const char *password = "PASSWORD";
 
 //---------------------GPS-----------------
 static const int RXPin = 5, TXPin = 18;
@@ -24,12 +24,13 @@ static const uint32_t GPSBaud = 9600;
 double latitude, longitude;
 
 // -------------------------MQTT connection settings---------------------
-const char *mqtt_broker = "mqtt.ap-in-1.anedya.io";                        // MQTT broker address
-const char *mqtt_username = deviceID;                                      // MQTT username
-const char *mqtt_password = connectionkey;                                 // MQTT password
-const int mqtt_port = 8883;                                                // MQTT port
-String responseTopic = "$anedya/device/" + String(deviceID) + "/response"; // MQTT topic for device responses
-String errorTopic = "$anedya/device/" + String(deviceID) + "/errors";      // MQTT topic for device errors
+String str_mqtt_broker = "mqtt." + REGION_CODE + ".anedya.io";
+ const char *mqtt_broker = str_mqtt_broker.c_str(); // MQTT broker address
+const char *mqtt_username = DEVICE_ID;                                                                           // MQTT username
+const char *mqtt_password = CONNECTION_KEY;                                                                      // MQTT password
+const int mqtt_port = 8883;                                                                                     // MQTT port
+String responseTopic = "$anedya/device/" + String(DEVICE_ID) + "/response";                                      // MQTT topic for device responses
+String errorTopic = "$anedya/device/" + String(DEVICE_ID) + "/errors";                                           // MQTT topic for device errors
 
 // Root CA Certificate
 // fill anedya root certificate. it can be get from [https://docs.anedya.io/device/mqtt-endpoints/#tls]
@@ -65,7 +66,7 @@ PubSubClient mqtt_client(esp_client);
 // Function Declarations
 void connectToMQTT();
 void mqttCallback(char *topic, byte *payload, unsigned int length);
-void setDevice_time();                                                                 // Function to configure the device time with real-time from ATS (Anedya Time Services)
+void setDevice_time();                                                                     // Function to configure the device time with real-time from ATS (Anedya Time Services)
 void anedya_submitLocation(String VARIABLE_IDENTIFIER, double LATITUDE, double LONGITUDE); // Function to submit data to the Anedya server
 
 void setup()
@@ -76,7 +77,7 @@ void setup()
   delay(150); // Delay for 1.5 seconds
 
   // Connect to WiFi network
-  WiFi.begin(ssid, pass);
+  WiFi.begin(ssid, password);
   Serial.println();
   Serial.print("Connecting to WiFi...");
   while (WiFi.status() != WL_CONNECTED)
@@ -96,9 +97,6 @@ void setup()
   mqtt_client.setKeepAlive(60);                  // Set the keep alive interval (in seconds) for the MQTT connection to maintain connectivity
   mqtt_client.setCallback(mqttCallback);         // Set the callback function to be invoked when MQTT messages are received
   connectToMQTT();                               // Attempt to establish a connection to the anedya broker
-
-  mqtt_client.subscribe(responseTopic.c_str()); // subscribe to get response
-  mqtt_client.subscribe(errorTopic.c_str());    // subscibe to get error
 
   setDevice_time();
 }
@@ -124,9 +122,9 @@ void loop()
     if ((millis() - submitInterval > gpsLocationSubmit_interval) && latitude != 0)
     {
       Serial.print("Location : ");
-      Serial.print(latitude,7);
+      Serial.print(latitude, 7);
       Serial.print(F(","));
-      Serial.println(longitude,7);
+      Serial.println(longitude, 7);
 
       anedya_submitLocation("location", latitude, longitude);
       latitude = 0;
@@ -145,11 +143,13 @@ void connectToMQTT()
 {
   while (!mqtt_client.connected())
   {
-    const char *client_id = deviceID;
+    const char *client_id = DEVICE_ID;
     Serial.print("Connecting to Anedya Broker....... ");
     if (mqtt_client.connect(client_id, mqtt_username, mqtt_password))
     {
       Serial.println("Connected to Anedya broker");
+      mqtt_client.subscribe(responseTopic.c_str()); // subscribe to get response
+      mqtt_client.subscribe(errorTopic.c_str());    // subscibe to get error
     }
     else
     {
@@ -187,7 +187,7 @@ void mqttCallback(char *topic, byte *payload, unsigned int length)
 // For more info, visit [https://docs.anedya.io/device/api/http-time-sync/]
 void setDevice_time()
 {
-  String timeTopic = "$anedya/device/" + String(deviceID) + "/time/json";
+  String timeTopic = "$anedya/device/" + String(DEVICE_ID) + "/time/json";
   const char *mqtt_topic = timeTopic.c_str();
   // Attempt to synchronize time with Anedya server
   if (mqtt_client.connected())
@@ -242,7 +242,7 @@ void setDevice_time()
         Serial.println("\n synchronized!");
         timeCheck = false;
       } // response check
-    }   // while loop end
+    } // while loop end
   }
   else
   {
@@ -256,7 +256,7 @@ void anedya_submitLocation(String VARIABLE_IDENTIFIER, double LATITUDE, double L
 {
   boolean check = true;
 
-  String strSubmitTopic = "$anedya/device/" + String(deviceID) + "/submitdata/json";
+  String strSubmitTopic = "$anedya/device/" + String(DEVICE_ID) + "/submitdata/json";
   const char *submitTopic = strSubmitTopic.c_str();
   while (check)
   {
@@ -311,5 +311,3 @@ void anedya_submitLocation(String VARIABLE_IDENTIFIER, double LATITUDE, double L
     } // mqtt connect check end
   }
 }
-
-

@@ -26,31 +26,31 @@
 // Emulate Hardware Sensor?
 bool virtual_sensor = false;
 
-#include <WiFi.h>            //library to handle wifi connection 
+#include <WiFi.h>             //library to handle wifi connection
 #include <PubSubClient.h>     // library to establish mqtt connection
-#include <WiFiClientSecure.h>  //library to maintain the secure connection 
-#include <ArduinoJson.h> // Include the Arduino library to make json or abstract the value from the json
-#include <TimeLib.h>     // Include the Time library to handle time synchronization with ATS (Anedya Time Services)
-#include <DHT.h>         // Include the DHT library for humidity and temperature sensor handling
+#include <WiFiClientSecure.h> //library to maintain the secure connection
+#include <ArduinoJson.h>      // Include the Arduino library to make json or abstract the value from the json
+#include <TimeLib.h>          // Include the Time library to handle time synchronization with ATS (Anedya Time Services)
+#include <DHT.h>              // Include the DHT library for humidity and temperature sensor handling
 
-String regionCode = "ap-in-1";                   // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/#region]
-const char *deviceID = "<PHYSICAL-DEVICE-UUID>"; // Fill your device Id , that you can get from your node description
-const char *connectionkey = "<CONNECTION-KEY>";  // Fill your connection key, that you can get from your node description
+String REGION_CODE = "ap-in-1";                   // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/#region]
+const char *CONNECTION_KEY = "CONNECTION_KEY";  // Fill your connection key, that you can get from your node description
+const char *DEVICE_ID = "PHYSICAL_DEVICE_ID"; // Fill your device Id , that you can get from your node description
 // WiFi credentials
-const char *ssid = "<SSID>";     // Replace with your WiFi name
-const char *pass = "<PASSWORD>"; // Replace with your WiFi password
-
+const char *ssid = "SSID";     
+const char *password = "PASSWORD"; 
 
 // MQTT connection settings
-const char *mqtt_broker = "mqtt.ap-in-1.anedya.io";  // MQTT broker address
-const char *mqtt_username = deviceID;  // MQTT username
-const char *mqtt_password = connectionkey;  // MQTT password
-const int mqtt_port = 8883;  // MQTT port
-String responseTopic = "$anedya/device/" + String(deviceID) + "/response";  // MQTT topic for device responses
-String errorTopic = "$anedya/device/" + String(deviceID) + "/errors";  // MQTT topic for device errors
+String str_mqtt_broker = "mqtt." + REGION_CODE + ".anedya.io";
+const char *mqtt_broker = str_mqtt_broker.c_str();                         // MQTT broker address
+const char *mqtt_username = DEVICE_ID;                                      // MQTT username
+const char *mqtt_password = CONNECTION_KEY;                                 // MQTT password
+const int mqtt_port = 8883;                                                // MQTT port
+String responseTopic = "$anedya/device/" + String(DEVICE_ID) + "/response"; // MQTT topic for device responses
+String errorTopic = "$anedya/device/" + String(DEVICE_ID) + "/errors";      // MQTT topic for device errors
 
 // Root CA Certificate
-//fill anedya root certificate. it can be get from [https://docs.anedya.io/device/mqtt-endpoints/#tls]
+// fill anedya root certificate. it can be get from [https://docs.anedya.io/device/mqtt-endpoints/#tls]
 const char *ca_cert = R"EOF(                           
 -----BEGIN CERTIFICATE-----
 MIICDDCCAbOgAwIBAgITQxd3Dqj4u/74GrImxc0M4EbUvDAKBggqhkjOPQQDAjBL
@@ -67,8 +67,8 @@ CjAIMAYGBFUdIAAwCgYIKoZIzj0EAwIDRwAwRAIgR/rWSG8+L4XtFLces0JYS7bY
 -----END CERTIFICATE-----
 )EOF";
 
-long long submitDataTimer,submitLogTimer;   //timer variable for request handling
-String timeRes, submitRes;  //variable to store the response 
+long long submitDataTimer, submitLogTimer; // timer variable for request handling
+String timeRes, submitRes;                 // variable to store the response
 
 // Define the type of DHT sensor (DHT11, DHT21, DHT22, AM2301, AM2302, AM2321)
 #define DHT_TYPE DHT11
@@ -97,7 +97,7 @@ void setup()
   delay(1500);          // Delay for 1.5 seconds
 
   // Connect to WiFi network
-  WiFi.begin(ssid, pass);
+  WiFi.begin(ssid, password);
   Serial.println();
   Serial.print("Connecting to WiFi...");
   while (WiFi.status() != WL_CONNECTED)
@@ -113,12 +113,10 @@ void setup()
   submitLogTimer = millis();
   // Set Root CA certificate
   esp_client.setCACert(ca_cert);
-mqtt_client.setServer(mqtt_broker, mqtt_port);  // Set the MQTT server address and port for the MQTT client to connect to anedya broker
-mqtt_client.setKeepAlive(60);  // Set the keep alive interval (in seconds) for the MQTT connection to maintain connectivity
-mqtt_client.setCallback(mqttCallback);  // Set the callback function to be invoked when MQTT messages are received
-connectToMQTT(); // Attempt to establish a connection to the anedya broker
-mqtt_client.subscribe(responseTopic.c_str());  //subscribe to get response
-mqtt_client.subscribe(errorTopic.c_str());    //subscibe to get error
+  mqtt_client.setServer(mqtt_broker, mqtt_port); // Set the MQTT server address and port for the MQTT client to connect to anedya broker
+  mqtt_client.setKeepAlive(60);                  // Set the keep alive interval (in seconds) for the MQTT connection to maintain connectivity
+  mqtt_client.setCallback(mqttCallback);         // Set the callback function to be invoked when MQTT messages are received
+  connectToMQTT();                               // Attempt to establish a connection to the anedya broker
 
   setDevice_time();
   // Initialize the DHT sensor
@@ -171,11 +169,13 @@ void connectToMQTT()
 {
   while (!mqtt_client.connected())
   {
-    const char *client_id = deviceID;
+    const char *client_id = DEVICE_ID;
     Serial.print("Connecting to Anedya Broker....... ");
     if (mqtt_client.connect(client_id, mqtt_username, mqtt_password))
     {
       Serial.println("Connected to Anedya broker");
+      mqtt_client.subscribe(responseTopic.c_str()); // subscribe to get response
+      mqtt_client.subscribe(errorTopic.c_str());    // subscibe to get error
     }
     else
     {
@@ -213,7 +213,7 @@ void mqttCallback(char *topic, byte *payload, unsigned int length)
 // For more info, visit [https://docs.anedya.io/device/api/http-time-sync/]
 void setDevice_time()
 {
-  String timeTopic = "$anedya/device/" + String(deviceID) + "/time/json";
+  String timeTopic = "$anedya/device/" + String(DEVICE_ID) + "/time/json";
   const char *mqtt_topic = timeTopic.c_str();
   // Attempt to synchronize time with Anedya server
   if (mqtt_client.connected())
@@ -268,7 +268,7 @@ void setDevice_time()
         Serial.println("\n synchronized!");
         timeCheck = false;
       } // response check
-    }   // while loop end
+    } // while loop end
   }
   else
   {
@@ -282,7 +282,7 @@ void anedya_submitData(String datapoint, float sensor_data)
 {
   boolean check = true;
 
-  String strSubmitTopic = "$anedya/device/" + String(deviceID) + "/submitdata/json";
+  String strSubmitTopic = "$anedya/device/" + String(DEVICE_ID) + "/submitdata/json";
   const char *submitTopic = strSubmitTopic.c_str();
   while (check)
   {
@@ -327,7 +327,7 @@ void anedya_submitData(String datapoint, float sensor_data)
           Serial.println(submitRes);
         }
         check = false;
-        submitDataTimer=5000;
+        submitDataTimer = 5000;
       }
     }
     else
@@ -341,7 +341,7 @@ void anedya_submitLog(String reqID, String Log)
 {
   boolean check = true;
 
-  String strSubmitTopic = "$anedya/device/" + String(deviceID) + "/logs/submitLogs/json";
+  String strSubmitTopic = "$anedya/device/" + String(DEVICE_ID) + "/logs/submitLogs/json";
   const char *submitTopic = strSubmitTopic.c_str();
   while (check)
   {
@@ -379,7 +379,7 @@ void anedya_submitLog(String reqID, String Log)
           Serial.println(submitRes);
         }
         check = false;
-        submitLogTimer=5000;
+        submitLogTimer = 5000;
       }
     }
     else
