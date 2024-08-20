@@ -22,7 +22,7 @@ Following steps outline the overall steps to setup a project. You can read more 
 - `anedya_valueStore("<key>","<data-type>", "<ValuePayload")`
 fill:-
   - 1 Parameter- key.
-  - 2 Paramter- Data type,  `The value can hold any of the following types of data: string, binary, float, boolean`
+  - 2 Paramter- Data type,  
   - 3 Parameter- value/message.
 
  > [!TIP]
