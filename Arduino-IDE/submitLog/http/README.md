@@ -15,7 +15,7 @@ This Arduino sketch allows you to submit your device log to the Anedya.
 > [!IMPORTANT]
 > Prerequisite: Set up the dashboard and fill the connection key and physical device ID in the firmware. For detailed guidance, visit [here](https://github.com/anedyaio/anedya-example-nodemcu/blob/main/README.md) 
 
-### Code Set-Up 
+### Usages 
 
 To submit the the log, use : 
 ```

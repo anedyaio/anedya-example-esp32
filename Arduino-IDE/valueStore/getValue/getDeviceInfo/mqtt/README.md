@@ -1,9 +1,9 @@
 [<img src="https://img.shields.io/badge/Anedya-Documentation-blue?style=for-the-badge">](https://docs.anedya.io?utm_source=github&utm_medium=link&utm_campaign=github-examples&utm_content=esp32)
 
-# Store-Device-Info - Example-value-store (mqtt)
+# Get-Stored-Device-Info - Example-value-store (mqtt)
 
 
-This Arduino sketch allows you to set the your value to the anedya dashboard.
+This Arduino sketch allows you to get the  value from anedya.
 
 > [!WARNING]
 > This code is for hobbyists for learning purposes. Not recommended for production use!!
@@ -19,9 +19,14 @@ Following steps outline the overall steps to setup a project. You can read more 
 ### Code Setup
 
 - Fill the and device id and connection key
-- `anedya_valueStrValue("<key>", "<ValuePayload")` : Use to set the string value.
-- `anedya_valueFloatValue("<key>", "<ValuePayload")` : Use to set the flaot value.
+- `anedya_getNodeValue("<key>")`
+fill:-
+  - 1 Parameter- key.
 
+- `anedya_getGlobalValue("<NAMESPACE>","<KEY>")`
+fill:-
+  - 1 Parameter- NAMESPACE
+  - 2 Parameter- Key
 
  > [!TIP]
  > For more details, Visit anedya [documentation](https://docs.anedya.io?utm_source=github&utm_medium=link&utm_campaign=github-examples&utm_content=esp32)
@@ -31,7 +36,7 @@ Following steps outline the overall steps to setup a project. You can read more 
 
 1. Upload this code to your device.
 2. The device will connect to the WiFi network.
-3. Open the Serial Monitor to view the device's output.
+3. Open the Serial Monitor to view the value.
 
 
 > [!TIP]
