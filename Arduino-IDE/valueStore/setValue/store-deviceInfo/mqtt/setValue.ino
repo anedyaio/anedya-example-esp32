@@ -20,19 +20,19 @@
 #include <ArduinoJson.h>      // Include the Arduino library to make json or abstract the value from the json
 #include <TimeLib.h>          // Include the Time library to handle time synchronization with ATS (Anedya Time Services)
 
-String REGION_CODE = "ap-in-1";                   // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/#region]
-const char *CONNECTION_KEY = "CONNECTION_KEY";  // Fill your connection key, that you can get from your node description
-const char *DEVICE_ID = "PHYSICAL_DEVICE_ID"; // Fill your device Id , that you can get from your node description
+String REGION_CODE = "ap-in-1";                // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/#region]
+const char *CONNECTION_KEY = "CONNECTION_KEY"; // Fill your connection key, that you can get from your node description
+const char *DEVICE_ID = "PHYSICAL_DEVICE_ID";  // Fill your unique device Id
 // WiFi credentials
-const char *ssid = "SSID";     
-const char *password = "PASSWORD"; 
+const char *ssid = "SSID";
+const char *password = "PASSWORD";
 
 // MQTT connection settings
 String str_mqtt_broker = "mqtt." + REGION_CODE + ".anedya.io";
-const char *mqtt_broker = str_mqtt_broker.c_str();                         // MQTT broker address
+const char *mqtt_broker = str_mqtt_broker.c_str();                          // MQTT broker address
 const char *mqtt_username = DEVICE_ID;                                      // MQTT username
 const char *mqtt_password = CONNECTION_KEY;                                 // MQTT password
-const int mqtt_port = 8883;                                                // MQTT port
+const int mqtt_port = 8883;                                                 // MQTT port
 String responseTopic = "$anedya/device/" + String(DEVICE_ID) + "/response"; // MQTT topic for device responses
 String errorTopic = "$anedya/device/" + String(DEVICE_ID) + "/errors";      // MQTT topic for device errors
 
@@ -59,8 +59,8 @@ String valueRes;                                // variable to store the respons
 
 void connectToMQTT();
 void mqttCallback(char *topic, byte *payload, unsigned int length);
-void anedya_setValue(String KEY, String TYPE, String VALUE);
-void anedya_setValue(String KEY, String TYPE, float VALUE);
+void anedya_setStrValue(String KEY, String VALUE);
+void anedya_setFloatValue(String KEY, float VALUE);
 
 // WiFi and MQTT client initialization
 WiFiClientSecure esp_client;
@@ -107,12 +107,12 @@ void loop()
                        "Free Sketch Space:" + String(ESP.getFreeSketchSpace() / 1024) + " KB" + ", " +
                        "Flash Speed:" + String(ESP.getFlashChipSpeed() / 1000000) + " MHz";
 
-    anedya_setValue("Device Info", "string", boardInfo); /* anedya_setValue("<-KEY->","<-dataType->","<-VALUE->")
+    anedya_setStrValue("Device Info", boardInfo); /* anedya_setValue("<-KEY->","<-dataType->","<-VALUE->")
                                                    1 parameter- key,
                                                    2 parameter- The value can hold any of the following types of data: string, binary, float, boolean
                                                    3 parameter- value.  For detailed info, visit-https://docs.anedya.io/valuestore/intro/        */
-    float num=25.25;
-    anedya_setValue("float Num","float",num);
+    float float_num = 25.25;
+    anedya_setFloatValue("float Num", float_num);
 
     timer = millis();
   }
@@ -144,20 +144,21 @@ void mqttCallback(char *topic, byte *payload, unsigned int length)
 {
   // Serial.print("Message received on topic: ");
   // Serial.println(topic);
- char res[150] = "";
-for (unsigned int i = 0; i < length; i++)
-{
-  if (i < sizeof(res) - 1) {  // Ensure we don't overflow the buffer
-    res[i] = payload[i];
+  char res[150] = "";
+  for (unsigned int i = 0; i < length; i++)
+  {
+    if (i < sizeof(res) - 1)
+    { // Ensure we don't overflow the buffer
+      res[i] = payload[i];
+    }
   }
-}
-res[length] = '\0'; // Null-terminate the string
+  res[length] = '\0'; // Null-terminate the string
   String str_res(res);
   valueRes = str_res;
   Serial.println(valueRes);
 }
 
-void anedya_setValue(String KEY, String TYPE, String VALUE)
+void anedya_setStrValue(String KEY, String VALUE)
 {
   boolean check = true;
   String strSetTopic = "$anedya/device/" + String(DEVICE_ID) + "/valuestore/setValue/json";
@@ -166,23 +167,13 @@ void anedya_setValue(String KEY, String TYPE, String VALUE)
   {
     if (mqtt_client.connected())
     {
-      if (millis() - setValueTimer >= 2000)
+      if (millis() - setValueTimer >= 1000)
       {
         setValueTimer = millis();
         char payload[250]; // Ensure the array is large enough to hold the string
-        if (TYPE == "string")
-        {
-          sprintf(payload, "{\"reqId\": \"\",\"key\":\"%s\",\"value\": \"%s\",\"type\": \"%s\"}", KEY.c_str(), VALUE.c_str(), TYPE.c_str());
-        }
-        else if (TYPE == "float")
-        {
-           float  float_num = VALUE.toFloat();
-          sprintf(payload, "{\"reqId\": \"\",\"key\":\"%s\",\"value\": %.2f,\"type\": \"%s\"}", KEY.c_str(), float_num, TYPE.c_str());
-        }
-        else
-        {
-          Serial.println("unknown value type");
-        }
+
+        sprintf(payload, "{\"reqId\": \"\",\"key\":\"%s\",\"value\": \"%s\",\"type\": \"string\"}", KEY.c_str(), VALUE.c_str());
+
         // Serial.println(valueJsonStr);
         const char *setValuePayload = payload;
         mqtt_client.publish(setTopic, setValuePayload);
@@ -214,8 +205,51 @@ void anedya_setValue(String KEY, String TYPE, String VALUE)
     } // mqtt connect check end
   }
 }
-void anedya_setValue(String KEY, String TYPE, float VALUE)
+
+void anedya_setFloatValue(String KEY, float VALUE)
 {
-  String valueStr = String(VALUE, 6); // Convert float to String with 6 decimal places
-  anedya_setValue(KEY, TYPE, valueStr);
+  boolean check = true;
+  String strSetTopic = "$anedya/device/" + String(DEVICE_ID) + "/valuestore/setValue/json";
+  const char *setTopic = strSetTopic.c_str();
+  while (check)
+  {
+    if (mqtt_client.connected())
+    {
+      if (millis() - setValueTimer >= 1000)
+      {
+        setValueTimer = millis();
+        char payload[250]; // Ensure the array is large enough to hold the string
+
+        sprintf(payload, "{\"reqId\": \"\",\"key\":\"%s\",\"value\": %.2f,\"type\": \"float\"}", KEY.c_str(), VALUE);
+
+        // Serial.println(valueJsonStr);
+        const char *setValuePayload = payload;
+        mqtt_client.publish(setTopic, setValuePayload);
+      }
+      mqtt_client.loop();
+      if (valueRes != "")
+      {
+        // Parse the JSON response
+        DynamicJsonDocument jsonResponse(100);   // Declare a JSON document with a capacity of 200 bytes
+        deserializeJson(jsonResponse, valueRes); // Deserialize the JSON response from the server into the JSON document
+        int errorCode = jsonResponse["errCode"]; // Get the server receive time from the JSON document
+        if (errorCode == 0)
+        {
+          Serial.println("value set!!");
+        }
+        else
+        {
+          Serial.println("Failed to set value!");
+          Serial.println(valueRes);
+        }
+        check = false;
+        setValueTimer = 5000;
+        valueRes = "";
+      }
+    }
+    else
+    {
+      connectToMQTT();
+    } // mqtt connect check end
+  }
 }

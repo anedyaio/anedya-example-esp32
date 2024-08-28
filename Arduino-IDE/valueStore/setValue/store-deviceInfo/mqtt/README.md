@@ -19,11 +19,9 @@ Following steps outline the overall steps to setup a project. You can read more 
 ### Code Setup
 
 - Fill the and device id and connection key
-- `anedya_valueStore("<key>","<data-type>", "<ValuePayload")`
-fill:-
-  - 1 Parameter- key.
-  - 2 Paramter- Data type,  `The value can hold any of the following types of data: string, binary, float, boolean`
-  - 3 Parameter- value/message.
+- `anedya_valueStrValue("<key>", "<ValuePayload")` : Use to set the string value.
+- `anedya_valueFloatValue("<key>", "<ValuePayload")` : Use to set the flaot value.
+
 
  > [!TIP]
  > For more details, Visit anedya [documentation](https://docs.anedya.io?utm_source=github&utm_medium=link&utm_campaign=github-examples&utm_content=esp32)
