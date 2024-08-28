@@ -3,7 +3,7 @@
 # Get-Stored-Device-Info - Example-value-store (mqtt)
 
 
-This Arduino sketch allows you to het the your value to the anedya.
+This Arduino sketch allows you to get the  value from anedya.
 
 > [!WARNING]
 > This code is for hobbyists for learning purposes. Not recommended for production use!!
