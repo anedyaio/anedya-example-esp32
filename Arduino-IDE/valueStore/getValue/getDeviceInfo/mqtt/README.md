@@ -23,9 +23,9 @@ Following steps outline the overall steps to setup a project. You can read more 
 fill:-
   - 1 Parameter- key.
 
-- `anedya_getGlobalValue("<ID>","<KEY>")`
+- `anedya_getGlobalValue("<NAMESPACE>","<KEY>")`
 fill:-
-  - 1 Parameter- ID
+  - 1 Parameter- NAMESPACE
   - 2 Parameter- Key
 
  > [!TIP]

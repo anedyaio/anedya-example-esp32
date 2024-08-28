@@ -167,7 +167,7 @@ void anedya_getNodeValue(String KEY)
         connectToMQTT();
     } // mqtt connect check end
 }
-void anedya_getGlobalValue(String ID, String KEY)
+void anedya_getGlobalValue(String NAMESPACE, String KEY)
 {
     String strSetTopic = "$anedya/device/" + String(DEVICE_ID) + "/valuestore/getValue/json";
     const char *setTopic = strSetTopic.c_str();
@@ -178,7 +178,7 @@ void anedya_getGlobalValue(String ID, String KEY)
                               "\"namespace\": {"
                               "\"scope\": \"global\","
                               "\"id\": \"" +
-                              ID + "\""
+                              NAMESPACE + "\""
                                    "},"
                                    "\"key\": \"" +
                               KEY + "\""
