@@ -99,7 +99,7 @@ void anedya_getNodeValue(String KEY)
     {
       String response = http.getString(); // Get the response from the server
       // Parse the JSON response
-      DynamicJsonDocument valueResponse(200);
+      JsonDocument valueResponse;
       deserializeJson(valueResponse, response); // Extract the JSON response
                                                 // Extract the server time from the response
       int errorcode = valueResponse["errorcode"];
@@ -151,7 +151,7 @@ void anedya_getGlobalValue(String NAMESPACE, String KEY)
     {
       String response = http.getString(); // Get the response from the server
       // Parse the JSON response
-      DynamicJsonDocument valueResponse(200);
+      JsonDocument valueResponse;
       deserializeJson(valueResponse, response); // Extract the JSON response
                                                 // Extract the server time from the response
       int errorcode = valueResponse["errorcode"];

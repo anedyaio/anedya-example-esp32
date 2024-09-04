@@ -129,7 +129,7 @@ void setDevice_time()
     long long deviceSendTime = millis();
 
     // Preparing the request payload
-    StaticJsonDocument<200> requestPayload;            // Declaring a JSON document with a capacity of 200 bytes
+    JsonDocument requestPayload;            // Declaring a JSON document with a capacity of 200 bytes
     requestPayload["deviceSendTime"] = deviceSendTime; // Adding a key-value pair to the JSON document
     String jsonPayload;                                // Declaring a string to store the serialized JSON payload
     serializeJson(requestPayload, jsonPayload);        // Serializing the JSON document into a string
@@ -153,7 +153,7 @@ void setDevice_time()
     }
 
     // Parsing the JSON response
-    DynamicJsonDocument jsonResponse(200);           // Declaring a JSON document with a capacity of 200 bytes
+    JsonDocument jsonResponse;           // Declaring a JSON document with a capacity of 200 bytes
     deserializeJson(jsonResponse, http.getString()); // Deserializing the JSON response from the server into the JSON document
 
     long long serverReceiveTime = jsonResponse["serverReceiveTime"]; // Getting the server receive time from the JSON document
@@ -200,7 +200,7 @@ void anedya_submitData(String datapoint, float sensor_data)
     {
       String response = http.getString(); // Getting the response from the server
       // Parsing the JSON response
-      DynamicJsonDocument jsonSubmit_response(200);
+      JsonDocument jsonSubmit_response;
       deserializeJson(jsonSubmit_response, response); // Extracting the JSON response
       int errorcode = jsonSubmit_response["errorcode"];
       if (errorcode == 0) // Error code 0 indicates data submitted successfully

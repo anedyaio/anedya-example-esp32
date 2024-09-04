@@ -94,7 +94,7 @@ void anedya_setValue(String key, String type, String value)  //function to set t
     if (httpResponseCode > 0) {
       String response = http.getString();  // Get the response from the server
       // Parse the JSON response
-      DynamicJsonDocument valueResponse(200);
+      JsonDocument valueResponse;
       deserializeJson(valueResponse, response);  // Extract the JSON response
                                                        // Extract the server time from the response
       int errorcode = valueResponse["errorcode"];

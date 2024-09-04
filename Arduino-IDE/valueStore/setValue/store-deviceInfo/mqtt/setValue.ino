@@ -182,7 +182,7 @@ void anedya_setStrValue(String KEY, String VALUE)
       if (valueRes != "")
       {
         // Parse the JSON response
-        DynamicJsonDocument jsonResponse(100);   // Declare a JSON document with a capacity of 200 bytes
+        JsonDocument jsonResponse;   // Declare a JSON document with a capacity of 200 bytes
         deserializeJson(jsonResponse, valueRes); // Deserialize the JSON response from the server into the JSON document
         int errorCode = jsonResponse["errCode"]; // Get the server receive time from the JSON document
         if (errorCode == 0)
@@ -230,7 +230,7 @@ void anedya_setFloatValue(String KEY, float VALUE)
       if (valueRes != "")
       {
         // Parse the JSON response
-        DynamicJsonDocument jsonResponse(100);   // Declare a JSON document with a capacity of 200 bytes
+        JsonDocument jsonResponse;   // Declare a JSON document with a capacity of 200 bytes
         deserializeJson(jsonResponse, valueRes); // Deserialize the JSON response from the server into the JSON document
         int errorCode = jsonResponse["errCode"]; // Get the server receive time from the JSON document
         if (errorCode == 0)
