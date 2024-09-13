@@ -1,3 +1,34 @@
 .vscode
 To-Do.txt
 Doc.docx
+
+/previous/
+/learning/
+/esp-idf-lib/
+# Ignore build directory
+/build/
+
+# Ignore VSCode settings
+.vscode/
+
+# Ignore SDK configuration files
+sdkconfig
+sdkconfig.old
+sdkconfig.ci
+
+# Ignore Devcontainer settings (if not needed for others)
+.devcontainer/
+
+# Ignore compiled object files, binaries, and libraries
+*.o
+*.bin
+*.elf
+*.map
+*.a
+
+# Ignore backup files
+*.bak
+*.swp
+
+#Ignore test file
+*.py 
