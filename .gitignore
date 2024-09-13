@@ -5,8 +5,10 @@ Doc.docx
 /previous/
 /learning/
 /esp-idf-lib/
+**/esp-idf-lib/
 # Ignore build directory
 /build/
+**/build/
 
 # Ignore VSCode settings
 .vscode/
