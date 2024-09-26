@@ -2,8 +2,7 @@
 
 # Room Monitoring - Submit-data-with-ESP32+DHT (http)
 
-
-This Arduino sketch allows you to connect your device to a WiFi network and send data to a server. It fetches the server time and sends data to the anedya.
+https://github.com/UncleRus/esp-idf-lib.git
 
 > [!WARNING]
 > This code is for hobbyists for learning purposes. Not recommended for production use!!
