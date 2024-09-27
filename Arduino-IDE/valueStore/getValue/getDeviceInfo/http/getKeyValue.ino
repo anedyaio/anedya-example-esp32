@@ -204,10 +204,10 @@ void anedya_sendHeartbeat()
     http.addHeader("Authorization", CONNECTION_KEY);     // Adding a header containing the authorization key
 
     // Constructing the JSON payload with sensor data and timestamp
-    String payload_str = "{}";
+    String body_payload = "{}";
 
     // Sending the POST request with the JSON payload to Anedya server
-    int httpResponseCode = http.POST(payload_str);
+    int httpResponseCode = http.POST(body_payload);
 
     // Checking if the request was successful
     if (httpResponseCode > 0)
