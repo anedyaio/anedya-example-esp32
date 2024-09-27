@@ -49,6 +49,7 @@ float humidity;  //  variable to store humidity readings from the DHT sensor
 /*------------------------------------Function declarations--------------------------------------------------------------------*/
 void setDevice_time();                                       // Function to configure the device time with real-time from ATS (Anedya Time Services)
 void anedya_submitData(String datapoint, float sensor_data); // Function to submit data to the Anedya server
+void anedya_sendHeartbeat();
 
 /*------------------------------------Object initializing----------------------------------------------------------------------*/
 DHT dht(DHT_PIN, DHT_TYPE); // Initialize the DHT sensor object with specified pin and type
@@ -111,6 +112,8 @@ void loop()
   Serial.print("Humidity : "); 
   Serial.println(humidity); 
   anedya_submitData("humidity", humidity); // submitting humidity data to the Anedya
+
+  anedya_sendHeartbeat(); // sending heartbeat
 
   delay(15000); 
 }
@@ -210,6 +213,60 @@ void anedya_submitData(String datapoint, float sensor_data)
       else
       { 
         Serial.println("Failed to push!!");
+        Serial.println(response);  //error code4020 indicate -unknown variable identifier
+      }   
+    }                        
+    else
+    {
+      Serial.print("Error on sending POST: "); // Printing error message indicating failure to send POST request
+      Serial.println(httpResponseCode);        // Printing the HTTP response code
+    }
+    http.end(); // Ending the HTTP client session
+  }
+  else
+  {
+    Serial.println("Error in WiFi connection"); // Printing error message indicating WiFi connection failure
+  }
+}
+
+//---------------------------------- Function for send heartbeat -----------------------------------
+void anedya_sendHeartbeat()
+{
+  if (WiFi.status() == WL_CONNECTED)
+  {
+    HTTPClient http;                                                                   // Creating an instance of HTTPClient
+    String submitData_url = "https://device." + regionCode + ".anedya.io/v1/heartbeat"; // Constructing the URL for submitting data
+
+
+
+    // Preparing data payload in JSON format
+    http.begin(submitData_url);                           // Beginning an HTTP request to the specified URL
+    http.addHeader("Content-Type", "application/json"); // Adding a header specifying the content type as JSON
+    http.addHeader("Accept", "application/json");       // Adding a header specifying the accepted content type as JSON
+    http.addHeader("Auth-mode", "key");                 // Adding a header specifying the authentication mode as "key"
+    http.addHeader("Authorization", connectionKey);     // Adding a header containing the authorization key
+
+    // Constructing the JSON payload with sensor data and timestamp
+    String submitData_str = "{}";
+
+    // Sending the POST request with the JSON payload to Anedya server
+    int httpResponseCode = http.POST(submitData_str);
+
+    // Checking if the request was successful
+    if (httpResponseCode > 0)
+    {
+      String response = http.getString(); // Getting the response from the server
+      // Parsing the JSON response
+      JsonDocument jsonSubmit_response;
+      deserializeJson(jsonSubmit_response, response); // Extracting the JSON response
+      int errorcode = jsonSubmit_response["errorcode"];
+      if (errorcode == 0) // Error code 0 indicates data submitted successfully
+      { 
+        Serial.println("Sent Heartbeat");
+      }
+      else
+      { 
+        Serial.println("Failed to sent heartbeat!!");
         Serial.println(response);  //error code4020 indicate -unknown variable identifier
       }   
     }                        
