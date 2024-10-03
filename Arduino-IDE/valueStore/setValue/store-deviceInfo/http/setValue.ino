@@ -21,26 +21,26 @@
 #include <TimeLib.h>
 
 /*-----------------------------------------------------variable section------------------------------------------------------------*/
-//------------------Esseential and sensitive variable---------------------------------
-String regionCode = "ap-in-1";                              // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/#region]
-String DEVICE_ID = "<PHYSICAL-DEVICE-UUID>";   // Fill your device Id , that you can get from your node description
-String CONNECTION_KEY = "<CONNECTION-KEY>";  // Fill your connection key, that you can get from your node description
-char ssid[] = "<SSID>";  // Your WiFi network SSID
-char pass[] = "<PASSWORD>";  // Your WiFi network password
+// ----------------------------- Anedya and Wifi credentials --------------------------------------------
+String REGION_CODE = "ap-in-1";                   // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/#region]
+const char *CONNECTION_KEY = "";  // Fill your connection key, that you can get from your node description
+const char *PHYSICAL_DEVICE_ID = ""; // Fill your device Id , that you can get from your node description
+const char *SSID = "";     
+const char *PASSWORD = ""; 
 
 //-----------------------------------helper variable--------------------------
 long long updateInterval,timer,heartbeat_timer;   //varibles to insert interval
 
 //---------------------- Function declaration ----------------------------------
 void anedya_setValue(String key, String type, String value);  //function declaration to set the value
-viod anedya_sendHeartbeat();  //function declaration to send heartbeat
+void anedya_sendHeartbeat();  //function declaration to send heartbeat
 
 /*-----------------------------------------------------setup section------------------------------------------------------------*/
 void setup() {
   Serial.begin(115200);  // Initialize serial communication with  your device compatible baud rate
   delay(1500);           // Delay for 1.5 seconds
 
-  WiFi.begin(ssid, pass);
+  WiFi.begin(SSID, PASSWORD);
   Serial.println();
   Serial.print("Connecting to WiFi...");
   while (WiFi.status() != WL_CONNECTED) {
@@ -73,7 +73,7 @@ void loop() {
    timer=millis();                             
   }
 
-  if(millis()-heartbeat_timer>=60000){
+  if(millis()-heartbeat_timer>=5000){
     anedya_sendHeartbeat();
     heartbeat_timer=millis();
   }
@@ -83,7 +83,7 @@ void anedya_setValue(String key, String type, String value)  //function to set t
 {
   if (WiFi.status() == WL_CONNECTED) {
     HTTPClient http;                                                                             // Create an instance of HTTPClient
-    String setValue_url = "https://device." + regionCode + ".anedya.io/v1/valuestore/setValue";  // Construct the URL for submitting data
+    String setValue_url = "https://device." + REGION_CODE + ".anedya.io/v1/valuestore/setValue";  // Construct the URL for submitting data
 
 
     // Prepare data payload in JSON format
@@ -130,10 +130,10 @@ void anedya_sendHeartbeat()
   if (WiFi.status() == WL_CONNECTED)
   {
     HTTPClient http;                                                                   // Creating an instance of HTTPClient
-    String submitData_url = "https://device." + regionCode + ".anedya.io/v1/heartbeat"; // Constructing the URL for submitting data
+    String heartbeat_url = "https://device." + REGION_CODE + ".anedya.io/v1/heartbeat"; // Constructing the URL for submitting data
 
     // Preparing data payload in JSON format
-    http.begin(submitData_url);                           // Beginning an HTTP request to the specified URL
+    http.begin(heartbeat_url);                           // Beginning an HTTP request to the specified URL
     http.addHeader("Content-Type", "application/json"); // Adding a header specifying the content type as JSON
     http.addHeader("Accept", "application/json");       // Adding a header specifying the accepted content type as JSON
     http.addHeader("Auth-mode", "key");                 // Adding a header specifying the authentication mode as "key"
