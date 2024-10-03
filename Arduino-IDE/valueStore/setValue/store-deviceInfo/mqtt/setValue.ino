@@ -20,21 +20,22 @@
 #include <ArduinoJson.h>      // Include the Arduino library to make json or abstract the value from the json
 #include <TimeLib.h>          // Include the Time library to handle time synchronization with ATS (Anedya Time Services)
 
-String REGION_CODE = "ap-in-1";                // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/#region]
-const char *CONNECTION_KEY = "CONNECTION_KEY"; // Fill your connection key, that you can get from your node description
-const char *DEVICE_ID = "PHYSICAL_DEVICE_ID";  // Fill your unique device Id
-// WiFi credentials
-const char *ssid = "SSID";
-const char *password = "PASSWORD";
+// ----------------------------- Anedya and Wifi credentials --------------------------------------------
+String REGION_CODE = "ap-in-1";                   // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/#region]
+const char *CONNECTION_KEY = "";  // Fill your connection key, that you can get from your node description
+const char *PHYSICAL_DEVICE_ID = ""; // Fill your device Id , that you can get from your node description
+const char *SSID = "";     
+const char *PASSWORD = ""; 
+
 
 // MQTT connection settings
 String str_mqtt_broker = "mqtt." + REGION_CODE + ".anedya.io";
 const char *mqtt_broker = str_mqtt_broker.c_str();                          // MQTT broker address
-const char *mqtt_username = DEVICE_ID;                                      // MQTT username
+const char *mqtt_username = PHYSICAL_DEVICE_ID;                                      // MQTT username
 const char *mqtt_password = CONNECTION_KEY;                                 // MQTT password
 const int mqtt_port = 8883;                                                 // MQTT port
-String responseTopic = "$anedya/device/" + String(DEVICE_ID) + "/response"; // MQTT topic for device responses
-String errorTopic = "$anedya/device/" + String(DEVICE_ID) + "/errors";      // MQTT topic for device errors
+String responseTopic = "$anedya/device/" + String(PHYSICAL_DEVICE_ID) + "/response"; // MQTT topic for device responses
+String errorTopic = "$anedya/device/" + String(PHYSICAL_DEVICE_ID) + "/errors";      // MQTT topic for device errors
 
 // Root CA Certificate
 // fill anedya root certificate. it can be get from [https://docs.anedya.io/device/mqtt-endpoints/#tls]
@@ -54,13 +55,14 @@ CjAIMAYGBFUdIAAwCgYIKoZIzj0EAwIDRwAwRAIgR/rWSG8+L4XtFLces0JYS7bY
 -----END CERTIFICATE-----
 )EOF";
 
-long long setValueTimer, updateInterval, timer; // timer variable for request handling
+long long setValueTimer, updateInterval, timer, lastSubmittedHeartbeat_timer; // timer variable for request handling
 String valueRes;                                // variable to store the response
 
 void connectToMQTT();
 void mqttCallback(char *topic, byte *payload, unsigned int length);
 void anedya_setStrValue(String KEY, String VALUE);
 void anedya_setFloatValue(String KEY, float VALUE);
+void anedya_sendHeartbeat();
 
 // WiFi and MQTT client initialization
 WiFiClientSecure esp_client;
@@ -71,7 +73,7 @@ void setup()
   Serial.begin(115200); // Initialize serial communication with  your device compatible baud rate
   delay(1500);          // Delay for 1.5 seconds
 
-  WiFi.begin(ssid, password);
+  WiFi.begin(SSID, PASSWORD);
   Serial.println();
   Serial.print("Connecting to WiFi...");
   while (WiFi.status() != WL_CONNECTED)
@@ -84,6 +86,7 @@ void setup()
   Serial.println(WiFi.localIP());
 
   timer = millis();
+  lastSubmittedHeartbeat_timer = millis();
 
   esp_client.setCACert(ca_cert);                 // Set Root CA certificate
   mqtt_client.setServer(mqtt_broker, mqtt_port); // Set the MQTT server address and port for the MQTT client to connect to anedya broker
@@ -116,6 +119,11 @@ void loop()
 
     timer = millis();
   }
+
+  if (millis() - lastSubmittedHeartbeat_timer >= 5000){
+    anedya_sendHeartbeat();
+    lastSubmittedHeartbeat_timer = millis();
+  }
   mqtt_client.loop();
 }
 //<---------------------------------------------------------------------------------------------------------------------------->
@@ -123,7 +131,7 @@ void connectToMQTT()
 {
   while (!mqtt_client.connected())
   {
-    const char *client_id = DEVICE_ID;
+    const char *client_id = PHYSICAL_DEVICE_ID;
     Serial.print("Connecting to Anedya Broker....... ");
     if (mqtt_client.connect(client_id, mqtt_username, mqtt_password))
     {
@@ -161,7 +169,7 @@ void mqttCallback(char *topic, byte *payload, unsigned int length)
 void anedya_setStrValue(String KEY, String VALUE)
 {
   boolean check = true;
-  String strSetTopic = "$anedya/device/" + String(DEVICE_ID) + "/valuestore/setValue/json";
+  String strSetTopic = "$anedya/device/" + String(PHYSICAL_DEVICE_ID) + "/valuestore/setValue/json";
   const char *setTopic = strSetTopic.c_str();
   while (check)
   {
@@ -182,7 +190,7 @@ void anedya_setStrValue(String KEY, String VALUE)
       if (valueRes != "")
       {
         // Parse the JSON response
-        DynamicJsonDocument jsonResponse(100);   // Declare a JSON document with a capacity of 200 bytes
+        JsonDocument jsonResponse;   // Declare a JSON document with a capacity of 200 bytes
         deserializeJson(jsonResponse, valueRes); // Deserialize the JSON response from the server into the JSON document
         int errorCode = jsonResponse["errCode"]; // Get the server receive time from the JSON document
         if (errorCode == 0)
@@ -209,7 +217,7 @@ void anedya_setStrValue(String KEY, String VALUE)
 void anedya_setFloatValue(String KEY, float VALUE)
 {
   boolean check = true;
-  String strSetTopic = "$anedya/device/" + String(DEVICE_ID) + "/valuestore/setValue/json";
+  String strSetTopic = "$anedya/device/" + String(PHYSICAL_DEVICE_ID) + "/valuestore/setValue/json";
   const char *setTopic = strSetTopic.c_str();
   while (check)
   {
@@ -230,7 +238,7 @@ void anedya_setFloatValue(String KEY, float VALUE)
       if (valueRes != "")
       {
         // Parse the JSON response
-        DynamicJsonDocument jsonResponse(100);   // Declare a JSON document with a capacity of 200 bytes
+        JsonDocument jsonResponse;   // Declare a JSON document with a capacity of 200 bytes
         deserializeJson(jsonResponse, valueRes); // Deserialize the JSON response from the server into the JSON document
         int errorCode = jsonResponse["errCode"]; // Get the server receive time from the JSON document
         if (errorCode == 0)
@@ -252,4 +260,17 @@ void anedya_setFloatValue(String KEY, float VALUE)
       connectToMQTT();
     } // mqtt connect check end
   }
+}
+
+void anedya_sendHeartbeat()
+{
+  mqtt_client.connected() ? (void)0 : connectToMQTT();
+
+  String strSubmitTopic = "$anedya/device/" + String(PHYSICAL_DEVICE_ID) + "/heartbeat/json";
+  const char *submitTopic = strSubmitTopic.c_str();
+
+  String strLog = "{}";
+  const char *submitLogPayload = strLog.c_str();
+  mqtt_client.publish(submitTopic, submitLogPayload);
+  mqtt_client.loop();
 }

@@ -21,18 +21,21 @@
 #include <TimeLib.h>
 
 /*-----------------------------------------------------variable section------------------------------------------------------------*/
-//------------------Esseential and sensitive variable---------------------------------
-String REGION_CODE = "ap-in-1";                // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/#region]
-const char *CONNECTION_KEY = "CONNECTION_KEY"; // Fill your connection key, that you can get from your node description
-const char *DEVICE_ID = "PHYSICAL_DEVICE_ID";  // Fill your unique device Id
-// WiFi credentials
-const char *ssid = "SSID";
-const char *password = "PASSWORD";
+// ----------------------------- Anedya and Wifi credentials --------------------------------------------
+String REGION_CODE = "ap-in-1";                   // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/#region]
+const char *CONNECTION_KEY = "";  // Fill your connection key, that you can get from your node description
+const char *PHYSICAL_DEVICE_ID = ""; // Fill your device Id , that you can get from your node description
+const char *SSID = "";     
+const char *PASSWORD = ""; 
+
 
 //-----------------------------------helper variable--------------------------
-long long updateInterval, timer; // varibles to insert interval
+long long updateInterval, timer, heartbeat_timer; // varibles to insert interval
+
+//----------------------------- Declaration of functions---------------------------------------------
 void anedya_getNodeValue(String KEY);
 void anedya_getGlobalValue(String ID, String KEY);
+void anedya_sendHeartbeat();
 
 /*-----------------------------------------------------setup section------------------------------------------------------------*/
 void setup()
@@ -40,7 +43,7 @@ void setup()
   Serial.begin(115200); // Initialize serial communication with  your device compatible baud rate
   delay(1500);          // Delay for 1.5 seconds
 
-  WiFi.begin(ssid, password);
+  WiFi.begin(SSID, PASSWORD);
   Serial.println();
   Serial.print("Connecting to WiFi...");
   while (WiFi.status() != WL_CONNECTED)
@@ -52,6 +55,7 @@ void setup()
   Serial.print("Connected, IP address: ");
   Serial.println(WiFi.localIP());
   timer = millis();
+  heartbeat_timer = millis();
 }
 
 void loop()
@@ -63,6 +67,10 @@ void loop()
     anedya_getNodeValue("Device Info");
     anedya_getGlobalValue("global-key-value", "global-key");
     timer = millis();
+  }
+  if(millis() - heartbeat_timer >= 5000){
+    anedya_sendHeartbeat();
+    heartbeat_timer = millis();
   }
 }
 
@@ -99,7 +107,7 @@ void anedya_getNodeValue(String KEY)
     {
       String response = http.getString(); // Get the response from the server
       // Parse the JSON response
-      DynamicJsonDocument valueResponse(200);
+      JsonDocument valueResponse;
       deserializeJson(valueResponse, response); // Extract the JSON response
                                                 // Extract the server time from the response
       int errorcode = valueResponse["errorcode"];
@@ -151,7 +159,7 @@ void anedya_getGlobalValue(String NAMESPACE, String KEY)
     {
       String response = http.getString(); // Get the response from the server
       // Parse the JSON response
-      DynamicJsonDocument valueResponse(200);
+      JsonDocument valueResponse;
       deserializeJson(valueResponse, response); // Extract the JSON response
                                                 // Extract the server time from the response
       int errorcode = valueResponse["errorcode"];
@@ -176,5 +184,58 @@ void anedya_getGlobalValue(String NAMESPACE, String KEY)
   else
   {
     Serial.println("Error in WiFi connection"); // Print error message indicating WiFi connection failure
+  }
+}
+
+
+//---------------------------------- Function for send heartbeat -----------------------------------
+void anedya_sendHeartbeat()
+{
+  if (WiFi.status() == WL_CONNECTED)
+  {
+    HTTPClient http;                                                                   // Creating an instance of HTTPClient
+    String submitData_url = "https://device." + REGION_CODE + ".anedya.io/v1/heartbeat"; // Constructing the URL for submitting data
+
+    // Preparing data payload in JSON format
+    http.begin(submitData_url);                           // Beginning an HTTP request to the specified URL
+    http.addHeader("Content-Type", "application/json"); // Adding a header specifying the content type as JSON
+    http.addHeader("Accept", "application/json");       // Adding a header specifying the accepted content type as JSON
+    http.addHeader("Auth-mode", "key");                 // Adding a header specifying the authentication mode as "key"
+    http.addHeader("Authorization", CONNECTION_KEY);     // Adding a header containing the authorization key
+
+    // Constructing the JSON payload with sensor data and timestamp
+    String body_payload = "{}";
+
+    // Sending the POST request with the JSON payload to Anedya server
+    int httpResponseCode = http.POST(body_payload);
+
+    // Checking if the request was successful
+    if (httpResponseCode > 0)
+    {
+      String response = http.getString(); // Getting the response from the server
+      // Parsing the JSON response
+      JsonDocument jsonSubmit_response;
+      deserializeJson(jsonSubmit_response, response); // Extracting the JSON response
+      int errorcode = jsonSubmit_response["errorcode"];
+      if (errorcode == 0) // Error code 0 indicates data submitted successfully
+      { 
+        Serial.println("Sent Heartbeat");
+      }
+      else
+      { 
+        Serial.println("Failed to sent heartbeat!!");
+        Serial.println(response);  //error code4020 indicate -unknown variable identifier
+      }   
+    }                        
+    else
+    {
+      Serial.print("Error on sending POST: "); // Printing error message indicating failure to send POST request
+      Serial.println(httpResponseCode);        // Printing the HTTP response code
+    }
+    http.end(); // Ending the HTTP client session
+  }
+  else
+  {
+    Serial.println("Error in WiFi connection"); // Printing error message indicating WiFi connection failure
   }
 }
