@@ -19,7 +19,6 @@
                   Note: The code is tested on the "Esp-32 Wifi, Bluetooth, Dual Core Chip Development Board (ESP-WROOM-32)"
 
                                                                                            Dated: 12-March-2024
-
 */
 #include <Arduino.h>
 
@@ -33,12 +32,13 @@ bool virtual_sensor = true;
 #include <DHT.h>         // Include the DHT library for humidity and temperature sensor handling
 
 /*-----------------------------------------Variable section------------------------------------------------------------------*/
-//---------------essential variable------------------
-String regionCode = "ap-in-1";              // Specify the Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country codes, visit [https://docs.anedya.io/device/#region]
-String deviceId = "<PHYSICAL-DEVICE-UUID>"; // Fill in your device Id, which you can obtain from your node description
-String connectionKey = "<CONNECTION-KEY";  // Fill in your connection key, which you can obtain from your node description
-const char* ssid = "<SSID>";     // Enter your WiFi network's SSID
-const char* password = "<PASSWORD>"; // Enter your WiFi network's password
+// ----------------------------- Anedya and Wifi credentials --------------------------------------------
+String REGION_CODE = "ap-in-1";                   // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/#region]
+const char *CONNECTION_KEY = "CONNECTION-KEY";  // Fill your connection key, that you can get from your node description
+const char *PHYSICAL_DEVICE_ID = "PHYSICAL-DEVICE-ID"; // Fill your device Id , that you can get from your node description
+const char *SSID = "";     
+const char *PASSWORD = ""; 
+
 
 //-----------DHT sensor variable----------------
 #define DHT_TYPE DHT11 // Define the type of DHT sensor (DHT11, DHT21, DHT22, AM2301, AM2302, AM2321)
@@ -61,7 +61,7 @@ void setup()
   delay(1500);          // Delaying for 1.5 seconds
 
   // Connecting to WiFi network
-  WiFi.begin(ssid, password);
+  WiFi.begin(SSID, PASSWORD);
   Serial.println();
   Serial.print("Connecting to WiFi...");
   while (WiFi.status() != WL_CONNECTED)
@@ -123,7 +123,7 @@ void loop()
 // For more info, visit [https://docs.anedya.io/device/api/http-time-sync/]
 void setDevice_time()
 {
-  String time_url = "https://device." + regionCode + ".anedya.io/v1/time"; // url to fetch the real time from ther ATS (Anedya Time Services)
+  String time_url = "https://device." + REGION_CODE + ".anedya.io/v1/time"; // url to fetch the real time from ther ATS (Anedya Time Services)
 
   Serial.println("Time synchronizing......");
   int timeCheck = 1; // iterating to re-sync to ATS (Anedya Time Services), in case of failed attempt
@@ -179,7 +179,7 @@ void anedya_submitData(String datapoint, float sensor_data)
   if (WiFi.status() == WL_CONNECTED)
   {
     HTTPClient http;                                                                   // Creating an instance of HTTPClient
-    String submitData_url = "https://device." + regionCode + ".anedya.io/v1/submitData"; // Constructing the URL for submitting data
+    String submitData_url = "https://device." + REGION_CODE + ".anedya.io/v1/submitData"; // Constructing the URL for submitting data
 
     // Getting current device time and converting it to milliseconds
     long long current_time = now();                     // Getting the current time
@@ -190,7 +190,7 @@ void anedya_submitData(String datapoint, float sensor_data)
     http.addHeader("Content-Type", "application/json"); // Adding a header specifying the content type as JSON
     http.addHeader("Accept", "application/json");       // Adding a header specifying the accepted content type as JSON
     http.addHeader("Auth-mode", "key");                 // Adding a header specifying the authentication mode as "key"
-    http.addHeader("Authorization", connectionKey);     // Adding a header containing the authorization key
+    http.addHeader("Authorization", CONNECTION_KEY);     // Adding a header containing the authorization key
 
     // Constructing the JSON payload with sensor data and timestamp
     String submitData_str = "{\"data\":[{\"variable\": \"" + datapoint + "\",\"value\":" + String(sensor_data) + ",\"timestamp\":" + String(current_time_milli) + "}]}";
@@ -235,16 +235,14 @@ void anedya_sendHeartbeat()
   if (WiFi.status() == WL_CONNECTED)
   {
     HTTPClient http;                                                                   // Creating an instance of HTTPClient
-    String submitData_url = "https://device." + regionCode + ".anedya.io/v1/heartbeat"; // Constructing the URL for submitting data
-
-
+    String submitData_url = "https://device." + REGION_CODE + ".anedya.io/v1/heartbeat"; // Constructing the URL for submitting data
 
     // Preparing data payload in JSON format
-    http.begin(submitData_url);                           // Beginning an HTTP request to the specified URL
+    http.begin(submitData_url);                          // Beginning an HTTP request to the specified URL
     http.addHeader("Content-Type", "application/json"); // Adding a header specifying the content type as JSON
     http.addHeader("Accept", "application/json");       // Adding a header specifying the accepted content type as JSON
     http.addHeader("Auth-mode", "key");                 // Adding a header specifying the authentication mode as "key"
-    http.addHeader("Authorization", connectionKey);     // Adding a header containing the authorization key
+    http.addHeader("Authorization", CONNECTION_KEY);     // Adding a header containing the authorization key
 
     // Constructing the JSON payload with sensor data and timestamp
     String body_payload = "{}";
@@ -267,7 +265,7 @@ void anedya_sendHeartbeat()
       else
       { 
         Serial.println("Failed to sent heartbeat!!");
-        Serial.println(response);  //error code4020 indicate -unknown variable identifier
+        Serial.println(response);  // error code4020 indicate -unknown variable identifier
       }   
     }                        
     else
