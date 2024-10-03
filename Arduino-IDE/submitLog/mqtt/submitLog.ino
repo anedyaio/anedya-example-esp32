@@ -33,19 +33,19 @@ bool virtual_sensor = false;
 #include <TimeLib.h>          // Include the Time library to handle time synchronization with ATS (Anedya Time Services)
 #include <DHT.h>              // Include the DHT library for humidity and temperature sensor handling
 
-String REGION_CODE = "ap-in-1";                   // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/#region]
-const char *CONNECTION_KEY = "CONNECTION_KEY";  // Fill your connection key, that you can get from your node description
-const char *PHYSICAL_DEVICE_ID = "PHYSICAL_DEVICE_ID"; // Fill your device Id , that you can get from your node description
-// WiFi credentials
-const char *ssid = "SSID";     
-const char *password = "PASSWORD"; 
+// ----------------------------- Anedya and Wifi credentials --------------------------------------------
+String REGION_CODE = "ap-in-1";                                          // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/#region]
+const char *CONNECTION_KEY = "";         // Fill your connection key, that you can get from your node description
+const char *PHYSICAL_DEVICE_ID = ""; // Fill your device Id , that you can get from your node description
+const char *SSID = "";
+const char *PASSWORD = "";
 
 // MQTT connection settings
 String str_mqtt_broker = "mqtt." + REGION_CODE + ".anedya.io";
-const char *mqtt_broker = str_mqtt_broker.c_str();                         // MQTT broker address
+const char *mqtt_broker = str_mqtt_broker.c_str();                                   // MQTT broker address
 const char *mqtt_username = PHYSICAL_DEVICE_ID;                                      // MQTT username
-const char *mqtt_password = CONNECTION_KEY;                                 // MQTT password
-const int mqtt_port = 8883;                                                // MQTT port
+const char *mqtt_password = CONNECTION_KEY;                                          // MQTT password
+const int mqtt_port = 8883;                                                          // MQTT port
 String responseTopic = "$anedya/device/" + String(PHYSICAL_DEVICE_ID) + "/response"; // MQTT topic for device responses
 String errorTopic = "$anedya/device/" + String(PHYSICAL_DEVICE_ID) + "/errors";      // MQTT topic for device errors
 
@@ -98,7 +98,7 @@ void setup()
   delay(1500);          // Delay for 1.5 seconds
 
   // Connect to WiFi network
-  WiFi.begin(ssid, password);
+  WiFi.begin(SSID, PASSWORD);
   Serial.println();
   Serial.print("Connecting to WiFi...");
   while (WiFi.status() != WL_CONNECTED)
@@ -127,6 +127,8 @@ void setup()
 
 void loop()
 {
+
+  anedya_sendHeartbeat();
 
   if (!virtual_sensor)
   {
@@ -165,7 +167,6 @@ void loop()
 
   Serial.println("-------------------------------------------------");
 
-  anedya_sendHeartbeat();
   delay(5000);
 }
 //<---------------------------------------------------------------------------------------------------------------------------->
@@ -242,7 +243,7 @@ void setDevice_time()
         deviceSendTime = millis();
 
         // Prepare the request payload
-        JsonDocument requestPayload;            // Declare a JSON document with a capacity of 200 bytes
+        JsonDocument requestPayload;                       // Declare a JSON document with a capacity of 200 bytes
         requestPayload["deviceSendTime"] = deviceSendTime; // Add a key-value pair to the JSON document
         String jsonPayload;                                // Declare a string to store the serialized JSON payload
         serializeJson(requestPayload, jsonPayload);        // Serialize the JSON document into a string
@@ -256,7 +257,7 @@ void setDevice_time()
         String strResTime(timeRes);
 
         // Parse the JSON response
-        JsonDocument jsonResponse;     // Declare a JSON document with a capacity of 200 bytes
+        JsonDocument jsonResponse;                 // Declare a JSON document with a capacity of 200 bytes
         deserializeJson(jsonResponse, strResTime); // Deserialize the JSON response from the server into the JSON document
 
         long long serverReceiveTime = jsonResponse["serverReceiveTime"]; // Get the server receive time from the JSON document
@@ -311,7 +312,7 @@ void anedya_submitData(String datapoint, float sensor_data)
       if (submitRes != "")
       {
         // Parse the JSON response
-        JsonDocument jsonResponse;    // Declare a JSON document with a capacity of 200 bytes
+        JsonDocument jsonResponse;                // Declare a JSON document with a capacity of 200 bytes
         deserializeJson(jsonResponse, submitRes); // Deserialize the JSON response from the server into the JSON document
 
         int errorCode = jsonResponse["errCode"]; // Get the server receive time from the JSON document
@@ -370,7 +371,7 @@ void anedya_submitLog(String reqID, String Log)
       if (submitRes != "")
       {
         // Parse the JSON response
-        JsonDocument jsonResponse;    // Declare a JSON document with a capacity of 200 bytes
+        JsonDocument jsonResponse;                // Declare a JSON document with a capacity of 200 bytes
         deserializeJson(jsonResponse, submitRes); // Deserialize the JSON response from the server into the JSON document
         int errorCode = jsonResponse["errCode"];  // Get the server receive time from the JSON document
         if (errorCode == 0)
