@@ -26,12 +26,13 @@
 #include <ArduinoJson.h>      // Include the Arduino library to make json or abstract the value from the json
 #include <TimeLib.h>          // Include the Time library to handle time synchronization with ATS (Anedya Time Services)
 
+// ----------------------------- Anedya and Wifi credentials --------------------------------------------
 String REGION_CODE = "ap-in-1";                   // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/#region]
 const char *CONNECTION_KEY = "CONNECTION_KEY";  // Fill your connection key, that you can get from your node description
 const char *PHYSICAL_DEVICE_ID = "PHYSICAL_DEVICE_ID"; // Fill your device Id , that you can get from your node description
-// WiFi credentials
-const char *ssid = "SSID";     
-const char *password = "PASSWORD"; 
+const char *ssid = "";     
+const char *password = ""; 
+
 
 // MQTT connection settings
 String str_mqtt_broker="mqtt."+REGION_CODE+".anedya.io";
@@ -66,7 +67,7 @@ String ledStatus = "off";                                                       
 long long responseTimer = 0, lastSubmittedHeartbeat_timestamp;                                                               // timer to control flow
 bool processCheck = false;                                                                 // check's, to make sure publish for process topic , once.
 
-const int ledPin = 5; // Marked D5 on the ESP32
+const int ledPin = 2; //inbuilt led pin of the esp32
 
 // Function Declarations
 void connectToMQTT();                                               // function to connect with the anedya broker
@@ -96,7 +97,7 @@ void setup()
   Serial.print("Connected, IP address: ");
   Serial.println(WiFi.localIP());
 
-  submitDataTimer = millis();
+  lastSubmittedHeartbeat_timestamp = millis();
 
   // Set Root CA certificate
   esp_client.setCACert(ca_cert);                 // set the ca certificate
@@ -193,6 +194,7 @@ void mqttCallback(char *topic, byte *payload, unsigned int length)
     res[i] = payload[i];
   }
   String str_res(res);
+  // Serial.println(str_res);
   JsonDocument Response; // Declare a JSON document with a capacity of 200 bytes
   // Deserialize JSON and handle errors
   DeserializationError error = deserializeJson(Response, str_res);
@@ -209,12 +211,18 @@ void mqttCallback(char *topic, byte *payload, unsigned int length)
   }
   else if (Response.containsKey("command")) // block's to get the command
   {
+    const char *command = Response["command"].as<const char *>();
+    if (strcmp(command, "led") == 0){
+
     ledStatus = Response["data"].as<String>();
     responseTimer = millis();
     commandId = Response["commandId"].as<String>();
     String statusReceivedPayload = "{\"reqId\": \"\",\"commandId\": \"" + commandId + "\",\"status\": \"received\",\"ackdata\": \"\",\"ackdatatype\": \"\"}";
     mqtt_client.publish(statusTopic.c_str(), statusReceivedPayload.c_str());
     processCheck = true;
+    }else{
+      Serial.println("Unknown Device");
+    }
   }
   else if (Response["errCode"].as<String>() == "0")
   {
