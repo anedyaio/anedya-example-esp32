@@ -21,13 +21,13 @@
 #include <TimeLib.h>
 
 /*-----------------------------------------------------variable section------------------------------------------------------------*/
-//------------------Esseential and sensitive variable---------------------------------
-String REGION_CODE = "ap-in-1";                // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/#region]
-const char *CONNECTION_KEY = "CONNECTION_KEY"; // Fill your connection key, that you can get from your node description
-const char *DEVICE_ID = "PHYSICAL_DEVICE_ID";  // Fill your unique device Id
-// WiFi credentials
-const char *ssid = "SSID";
-const char *password = "PASSWORD";
+// ----------------------------- Anedya and Wifi credentials --------------------------------------------
+String REGION_CODE = "ap-in-1";                   // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/#region]
+const char *CONNECTION_KEY = "";  // Fill your connection key, that you can get from your node description
+const char *PHYSICAL_DEVICE_ID = ""; // Fill your device Id , that you can get from your node description
+const char *SSID = "";     
+const char *PASSWORD = ""; 
+
 
 //-----------------------------------helper variable--------------------------
 long long updateInterval, timer, heartbeat_timer; // varibles to insert interval
@@ -43,7 +43,7 @@ void setup()
   Serial.begin(115200); // Initialize serial communication with  your device compatible baud rate
   delay(1500);          // Delay for 1.5 seconds
 
-  WiFi.begin(ssid, password);
+  WiFi.begin(SSID, PASSWORD);
   Serial.println();
   Serial.print("Connecting to WiFi...");
   while (WiFi.status() != WL_CONNECTED)
@@ -68,7 +68,7 @@ void loop()
     anedya_getGlobalValue("global-key-value", "global-key");
     timer = millis();
   }
-  if(millis() - heartbeat_timer >= 60000){
+  if(millis() - heartbeat_timer >= 5000){
     anedya_sendHeartbeat();
     heartbeat_timer = millis();
   }
@@ -194,7 +194,7 @@ void anedya_sendHeartbeat()
   if (WiFi.status() == WL_CONNECTED)
   {
     HTTPClient http;                                                                   // Creating an instance of HTTPClient
-    String submitData_url = "https://device." + regionCode + ".anedya.io/v1/heartbeat"; // Constructing the URL for submitting data
+    String submitData_url = "https://device." + REGION_CODE + ".anedya.io/v1/heartbeat"; // Constructing the URL for submitting data
 
     // Preparing data payload in JSON format
     http.begin(submitData_url);                           // Beginning an HTTP request to the specified URL
