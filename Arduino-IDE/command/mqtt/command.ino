@@ -30,8 +30,8 @@
 String REGION_CODE = "ap-in-1";                   // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/#region]
 const char *CONNECTION_KEY = "CONNECTION_KEY";  // Fill your connection key, that you can get from your node description
 const char *PHYSICAL_DEVICE_ID = "PHYSICAL_DEVICE_ID"; // Fill your device Id , that you can get from your node description
-const char *ssid = "";     
-const char *password = ""; 
+const char *SSID = "";     
+const char *PASSWORD = ""; 
 
 
 // MQTT connection settings
@@ -85,7 +85,7 @@ void setup()
   delay(1500);          // Delay for 1.5 seconds
 
   // Connect to WiFi network
-  WiFi.begin(ssid, password);
+  WiFi.begin(SSID, PASSWORD);
   Serial.println();
   Serial.print("Connecting to WiFi...");
   while (WiFi.status() != WL_CONNECTED)
