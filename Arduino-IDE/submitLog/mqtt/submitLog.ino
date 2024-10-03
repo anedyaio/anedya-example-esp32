@@ -83,7 +83,7 @@ void mqttCallback(char *topic, byte *payload, unsigned int length);
 void setDevice_time();                                       // Function to configure the device time with real-time from ATS (Anedya Time Services)
 void anedya_submitData(String datapoint, float sensor_data); // Function to submit data to the Anedya server
 void anedya_submitLog(String reqID, String Log);
-void anedya_sendHeartBeat();
+void anedya_sendHeartbeat();
 
 // WiFi and MQTT client initialization
 WiFiClientSecure esp_client;
@@ -165,7 +165,7 @@ void loop()
 
   Serial.println("-------------------------------------------------");
 
-  anedya_sendHeartBeat();
+  anedya_sendHeartbeat();
   delay(5000);
 }
 //<---------------------------------------------------------------------------------------------------------------------------->
@@ -393,11 +393,10 @@ void anedya_submitLog(String reqID, String Log)
   }
 }
 
-void anedya_sendHeartBeat()
+void anedya_sendHeartbeat()
 {
   mqtt_client.connected() ? (void)0 : connectToMQTT();
 
-  // String strSubmitTopic = "$anedya/device/" + String(deviceID) + "/logs/submitLogs/json";
   String strSubmitTopic = "$anedya/device/" + String(PHYSICAL_DEVICE_ID) + "/heartbeat/json";
   const char *submitTopic = strSubmitTopic.c_str();
 

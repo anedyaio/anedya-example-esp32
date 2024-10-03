@@ -61,7 +61,7 @@ void connectToMQTT();
 void mqttCallback(char *topic, byte *payload, unsigned int length);
 void anedya_setStrValue(String KEY, String VALUE);
 void anedya_setFloatValue(String KEY, float VALUE);
-void anedya_sendHeartBeat();
+void anedya_sendHeartbeat();
 
 // WiFi and MQTT client initialization
 WiFiClientSecure esp_client;
@@ -120,7 +120,7 @@ void loop()
   }
 
   if (millis() - lastSubmittedHeartbeat_timer >= 5000){
-    anedya_sendHeartBeat();
+    anedya_sendHeartbeat();
     lastSubmittedHeartbeat_timer = millis();
   }
   mqtt_client.loop();
@@ -261,7 +261,7 @@ void anedya_setFloatValue(String KEY, float VALUE)
   }
 }
 
-void anedya_sendHeartBeat()
+void anedya_sendHeartbeat()
 {
   mqtt_client.connected() ? (void)0 : connectToMQTT();
 
