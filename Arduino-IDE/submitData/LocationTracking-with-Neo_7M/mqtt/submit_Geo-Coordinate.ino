@@ -19,7 +19,7 @@ const char *PHYSICAL_DEVICE_ID = ""; // Fill your device Id , that you can get f
 const char *SSID = "";     
 const char *PASSWORD = ""; 
 
-
+ 
 //---------------------GPS-----------------
 static const int RXPin = 5, TXPin = 18;
 
