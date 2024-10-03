@@ -2,7 +2,7 @@
 #include <Arduino.h>
 
 unsigned int gpsLocationSubmit_interval = 2000; // time in second
-unsigned int heartbeat_interval = 5000;          // time in second
+unsigned int heartbeat_interval = 5000;         // time in second
 
 #include <WiFi.h>             //library to handle wifi connection
 #include <PubSubClient.h>     // library to establish mqtt connection
@@ -12,8 +12,8 @@ unsigned int heartbeat_interval = 5000;          // time in second
 #include <TinyGPSPlus.h>
 #include <SoftwareSerial.h>
 
-String REGION_CODE = "ap-in-1";                 // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/#region]
-const char *CONNECTION_KEY = "CONNECTION_KEY";  // Fill your connection key, that you can get from your node description
+String REGION_CODE = "ap-in-1";                        // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/#region]
+const char *CONNECTION_KEY = "CONNECTION_KEY";         // Fill your connection key, that you can get from your node description
 const char *PHYSICAL_DEVICE_ID = "PHYSICAL_DEVICE_ID"; // Fill your device Id , that you can get from your node description
 const char *ssid = "SSID";
 const char *password = "PASSWORD";
@@ -26,12 +26,12 @@ double latitude, longitude;
 
 // -------------------------MQTT connection settings---------------------
 String str_mqtt_broker = "mqtt." + REGION_CODE + ".anedya.io";
- const char *mqtt_broker = str_mqtt_broker.c_str(); // MQTT broker address
-const char *mqtt_username = PHYSICAL_DEVICE_ID;                                                                           // MQTT username
-const char *mqtt_password = CONNECTION_KEY;                                                                      // MQTT password
-const int mqtt_port = 8883;                                                                                     // MQTT port
-String responseTopic = "$anedya/device/" + String(PHYSICAL_DEVICE_ID) + "/response";                                      // MQTT topic for device responses
-String errorTopic = "$anedya/device/" + String(PHYSICAL_DEVICE_ID) + "/errors";                                           // MQTT topic for device errors
+const char *mqtt_broker = str_mqtt_broker.c_str();                                   // MQTT broker address
+const char *mqtt_username = PHYSICAL_DEVICE_ID;                                      // MQTT username
+const char *mqtt_password = CONNECTION_KEY;                                          // MQTT password
+const int mqtt_port = 8883;                                                          // MQTT port
+String responseTopic = "$anedya/device/" + String(PHYSICAL_DEVICE_ID) + "/response"; // MQTT topic for device responses
+String errorTopic = "$anedya/device/" + String(PHYSICAL_DEVICE_ID) + "/errors";      // MQTT topic for device errors
 
 // Root CA Certificate
 // fill anedya root certificate. it can be get from [https://docs.anedya.io/device/mqtt-endpoints/#tls]
@@ -53,7 +53,7 @@ CjAIMAYGBFUdIAAwCgYIKoZIzj0EAwIDRwAwRAIgR/rWSG8+L4XtFLces0JYS7bY
 
 //-----------------------------Helper variable------------------------------
 long long submitTimer, submitInterval, lastSubmittedHeatbeat_timestamp; // timer variable for request handling
-String timeRes, submitRes;             // variable to store the response
+String timeRes, submitRes;                                              // variable to store the response
 
 //---------------------------object initiazation--------------------------
 // The TinyGPSPlus object
@@ -83,7 +83,7 @@ void setup()
 
   submitTimer = millis();
   submitInterval = millis();
-  lastSubmittedHeatbeat_timestamp= millis();
+  lastSubmittedHeatbeat_timestamp = millis();
   // Set Root CA certificate
   esp_client.setCACert(ca_cert);
   mqtt_client.setServer(mqtt_broker, mqtt_port); // Set the MQTT server address and port for the MQTT client to connect to anedya broker
@@ -124,16 +124,16 @@ void loop()
       longitude = 0;
       submitInterval = millis();
     }
+    if (millis() - lastSubmittedHeatbeat_timestamp > heartbeat_interval)
+    {
+      anedya_sendHeartbeat();
+      lastSubmittedHeatbeat_timestamp = millis();
+    }
   }
   if (millis() > 5000 && gps.charsProcessed() < 10)
   {
     Serial.println(F("No GPS detected: check wiring."));
     delay(4000);
-  }
-  
-  if(millis() - lastSubmittedHeatbeat_timestamp > heartbeat_interval){
-    anedya_sendHeartbeat();
-    lastSubmittedHeatbeat_timestamp = millis();
   }
 }
 //<---------------------------------------------------------------------------------------------------------------------------->
@@ -225,7 +225,7 @@ void setDevice_time()
         deviceSendTime = millis();
 
         // Prepare the request payload
-        JsonDocument requestPayload;            // Declare a JSON document with a capacity of 200 bytes
+        JsonDocument requestPayload;                       // Declare a JSON document with a capacity of 200 bytes
         requestPayload["deviceSendTime"] = deviceSendTime; // Add a key-value pair to the JSON document
         String jsonPayload;                                // Declare a string to store the serialized JSON payload
         serializeJson(requestPayload, jsonPayload);        // Serialize the JSON document into a string
@@ -239,7 +239,7 @@ void setDevice_time()
         String strResTime(timeRes);
 
         // Parse the JSON response
-        JsonDocument jsonResponse;     // Declare a JSON document with a capacity of 200 bytes
+        JsonDocument jsonResponse;                 // Declare a JSON document with a capacity of 200 bytes
         deserializeJson(jsonResponse, strResTime); // Deserialize the JSON response from the server into the JSON document
 
         long long serverReceiveTime = jsonResponse["serverReceiveTime"]; // Get the server receive time from the JSON document
@@ -295,7 +295,7 @@ void anedya_submitLocation(String VARIABLE_IDENTIFIER, double LATITUDE, double L
       if (submitRes != "")
       {
         // Parse the JSON response
-        JsonDocument jsonResponse;    // Declare a JSON document with a capacity of 200 bytes
+        JsonDocument jsonResponse;                // Declare a JSON document with a capacity of 200 bytes
         deserializeJson(jsonResponse, submitRes); // Deserialize the JSON response from the server into the JSON document
 
         int errorCode = jsonResponse["errCode"]; // Get the server receive time from the JSON document
@@ -324,7 +324,6 @@ void anedya_submitLocation(String VARIABLE_IDENTIFIER, double LATITUDE, double L
     } // mqtt connect check end
   }
 }
-
 
 void anedya_sendHeartbeat()
 {
