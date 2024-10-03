@@ -12,11 +12,13 @@ unsigned int heartbeat_interval = 5000;         // time in second
 #include <TinyGPSPlus.h>
 #include <SoftwareSerial.h>
 
-String REGION_CODE = "ap-in-1";                        // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/#region]
-const char *CONNECTION_KEY = "CONNECTION_KEY";         // Fill your connection key, that you can get from your node description
-const char *PHYSICAL_DEVICE_ID = "PHYSICAL_DEVICE_ID"; // Fill your device Id , that you can get from your node description
-const char *ssid = "SSID";
-const char *password = "PASSWORD";
+// ----------------------------- Anedya and Wifi credentials --------------------------------------------
+String REGION_CODE = "ap-in-1";                   // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/#region]
+const char *CONNECTION_KEY = "";  // Fill your connection key, that you can get from your node description
+const char *PHYSICAL_DEVICE_ID = ""; // Fill your device Id , that you can get from your node description
+const char *SSID = "";     
+const char *PASSWORD = ""; 
+
 
 //---------------------GPS-----------------
 static const int RXPin = 5, TXPin = 18;
@@ -135,12 +137,17 @@ void loop()
     Serial.println(F("No GPS detected: check wiring."));
     delay(4000);
   }
+      if (millis() - lastSubmittedHeatbeat_timestamp > heartbeat_interval)
+    {
+      anedya_sendHeartbeat();
+      lastSubmittedHeatbeat_timestamp = millis();
+    }
 }
 //<---------------------------------------------------------------------------------------------------------------------------->
 void connectToWiFi()
 {
   // Connect to WiFi network
-  WiFi.begin(ssid, password);
+  WiFi.begin(SSID, PASSWORD);
   Serial.println();
   Serial.print("Connecting to WiFi...");
   while (WiFi.status() != WL_CONNECTED)
