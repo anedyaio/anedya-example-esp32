@@ -17,6 +17,7 @@
 #include <Arduino.h>
 #include <WiFi.h>         // Include the Wifi to handle the wifi connection
 #include <HTTPClient.h>   // Include the HTTPClient library to handle HTTP requests
+#include <NetworkClientSecure.h> // Include the NetworkClientSecure library to handle secure HTTP requests(https)
 #include <ArduinoJson.h>  //Include the ArduinoJson library to handle json
 #include <TimeLib.h>
 
@@ -28,12 +29,32 @@ const char *PHYSICAL_DEVICE_ID = ""; // Fill your device Id , that you can get f
 const char *SSID = "";     
 const char *PASSWORD = ""; 
 
+const char *ca_cert = R"literal(
+  -----BEGIN CERTIFICATE-----
+MIICDDCCAbOgAwIBAgITQxd3Dqj4u/74GrImxc0M4EbUvDAKBggqhkjOPQQDAjBL
+MQswCQYDVQQGEwJJTjEQMA4GA1UECBMHR3VqYXJhdDEPMA0GA1UEChMGQW5lZHlh
+MRkwFwYDVQQDExBBbmVkeWEgUm9vdCBDQSAzMB4XDTI0MDEwMTAwMDAwMFoXDTQz
+MTIzMTIzNTk1OVowSzELMAkGA1UEBhMCSU4xEDAOBgNVBAgTB0d1amFyYXQxDzAN
+BgNVBAoTBkFuZWR5YTEZMBcGA1UEAxMQQW5lZHlhIFJvb3QgQ0EgMzBZMBMGByqG
+SM49AgEGCCqGSM49AwEHA0IABKsxf0vpbjShIOIGweak0/meIYS0AmXaujinCjFk
+BFShcaf2MdMeYBPPFwz4p5I8KOCopgshSTUFRCXiiKwgYPKjdjB0MA8GA1UdEwEB
+/wQFMAMBAf8wHQYDVR0OBBYEFNz1PBRXdRsYQNVsd3eYVNdRDcH4MB8GA1UdIwQY
+MBaAFNz1PBRXdRsYQNVsd3eYVNdRDcH4MA4GA1UdDwEB/wQEAwIBhjARBgNVHSAE
+CjAIMAYGBFUdIAAwCgYIKoZIzj0EAwIDRwAwRAIgR/rWSG8+L4XtFLces0JYS7bY
+5NH1diiFk54/E5xmSaICIEYYbhvjrdR0GVLjoay6gFspiRZ7GtDDr9xF91WbsK0P
+-----END CERTIFICATE-----
+)literal";
+
+
 //-----------------------------------helper variable--------------------------
 long long updateInterval,timer,heartbeat_timer;   //varibles to insert interval
 
 //---------------------- Function declaration ----------------------------------
 void anedya_setValue(String key, String type, String value);  //function declaration to set the value
 void anedya_sendHeartbeat();  //function declaration to send heartbeat
+
+// -------------------------------- Client Initialization -----------------------
+NetworkClientSecure ncc_client; // Initialize the NetworkClientSecure object
 
 /*-----------------------------------------------------setup section------------------------------------------------------------*/
 void setup() {
@@ -50,6 +71,9 @@ void setup() {
   Serial.println();
   Serial.print("Connected, IP address: ");
   Serial.println(WiFi.localIP());
+
+  ncc_client.setCACert(ca_cert); // Set Root CA certificate
+
   timer=millis();
   heartbeat_timer=millis();
 } 
