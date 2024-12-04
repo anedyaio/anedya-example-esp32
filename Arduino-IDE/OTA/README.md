@@ -11,7 +11,7 @@ Following steps outline the overall steps to setup and OTA Deployment. You can r
 1. Create account and login
 2. Create new project.
 3. Create a node (e.g., for home- Room1 or study room).
-4. Upload Asset.
+4. Upload the Asset.
 5. Create a Deploymnent.
 
  > [!TIP]
