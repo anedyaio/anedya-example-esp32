@@ -5,7 +5,7 @@
 <p align="center">
     <img src="https://cdn.anedya.io/anedya_black_banner.png" alt="Logo">
 </p>
-This repository contains example projects for the ESP32 microcontroller utilizing the Anedya APIs. Anedya is a comprehensive cloud platform that offers Platform as a Service (PaaS) for IoT applications. It covers all aspects, including device lifecycle management, data storage, alerts, and data aggregation in a single platform. Anedya simplifies the integration of IoT hardware with the server and eliminates the burden of IoT cloud infrastructure development and management.
+This repository contains example projects for the ESP32 microcontroller utilizing the Anedya APIs. Anedya is a comprehensive cloud platform that offers Infrastructure as a Service (IaaS) for IoT applications. It covers all aspects, including device lifecycle management, data storage, alerts, and data aggregation in a single platform. Anedya simplifies the integration of IoT hardware with the server and eliminates the burden of IoT cloud infrastructure development and management.
 
 ## Examples Included:
 
