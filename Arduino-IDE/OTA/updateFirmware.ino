@@ -1,7 +1,6 @@
 /*
 
-                                                     OTA (Over The Air) Firmware Update
-
+                                    OTA (Over The Air) Firmware Update
                                     # Dashboard Setup
                                         1. Create account and login
                                         2. Create new project.
@@ -244,7 +243,7 @@ bool anedya_check_ota_update(char *assetURL, char *deploymentID)
             // Parsing the JSON response
             JsonDocument getNextOTA_response;
             deserializeJson(getNextOTA_response, response); // Extracting the JSON response
-            int errorcode = getNextOTA_response["errcode"];
+            int errorcode = getNextOTA_response["errorcode"];
             if (errorcode == 0) // Error code 0 indicates data submitted successfully
             {
                 bool deploymentAvailablity = getNextOTA_response["deploymentAvailable"];
