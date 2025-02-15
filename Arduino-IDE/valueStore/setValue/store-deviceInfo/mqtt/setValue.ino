@@ -192,7 +192,7 @@ void anedya_setStrValue(String KEY, String VALUE)
         // Parse the JSON response
         JsonDocument jsonResponse;   // Declare a JSON document with a capacity of 200 bytes
         deserializeJson(jsonResponse, valueRes); // Deserialize the JSON response from the server into the JSON document
-        int errorCode = jsonResponse["errCode"]; // Get the server receive time from the JSON document
+        int errorCode = jsonResponse["errorcode"]; // Get the server receive time from the JSON document
         if (errorCode == 0)
         {
           Serial.println("value set!!");
@@ -240,7 +240,7 @@ void anedya_setFloatValue(String KEY, float VALUE)
         // Parse the JSON response
         JsonDocument jsonResponse;   // Declare a JSON document with a capacity of 200 bytes
         deserializeJson(jsonResponse, valueRes); // Deserialize the JSON response from the server into the JSON document
-        int errorCode = jsonResponse["errCode"]; // Get the server receive time from the JSON document
+        int errorCode = jsonResponse["errorcode"]; // Get the server receive time from the JSON document
         if (errorCode == 0)
         {
           Serial.println("value set!!");
