@@ -48,6 +48,7 @@ To send hardware sensor value `virtual_Sensor = false`
 3. Open the Serial Monitor to view the device's output.
 4. The device will connect to the WiFi network, read temperature and humidity data from the DHT sensor, and start sending data to the Anedya.
 
+
 ## Dependencies
 
 ### ArduinoJson
@@ -60,6 +61,17 @@ This repository contains the ArduinoJson library, which provides efficient JSON 
 4. Click on the ArduinoJson entry in the list.
 5. Click the "Install" button to install the library.
 6. Once installed, you can include the library in your Arduino sketches by adding `#include <ArduinoJson.h>` at the top of your sketch.
+
+### PubSubClient
+The PubSubClient library provides a client for doing simple publish/subscribe messaging with a server that supports MQTT. It allows you to easily publish and subscribe to topics, making it ideal for IoT projects, data logging, and more.
+
+1. Open the Arduino IDE.
+2. Go to `Sketch > Include Library > Manage Libraries...`.
+3. In the Library Manager, search for "PubSubClient".
+4. Click on the PubSubClient by Nick O'Leary entry in the list.
+5. Click the "Install" button to install the library.
+6. Once installed, you can include the library in your Arduino sketches by adding `#include <PubSubClient.h>` at the top of your sketch.
+
 
 ### Timelib
 

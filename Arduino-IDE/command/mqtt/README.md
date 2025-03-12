@@ -46,6 +46,16 @@ This repository contains the ArduinoJson library, which provides efficient JSON 
 5. Click the "Install" button to install the library.
 6. Once installed, you can include the library in your Arduino sketches by adding `#include <ArduinoJson.h>` at the top of your sketch.
 
+### PubSubClient
+The PubSubClient library provides a client for doing simple publish/subscribe messaging with a server that supports MQTT. It allows you to easily publish and subscribe to topics, making it ideal for IoT projects, data logging, and more.
+
+1. Open the Arduino IDE.
+2. Go to `Sketch > Include Library > Manage Libraries...`.
+3. In the Library Manager, search for "PubSubClient".
+4. Click on the PubSubClient by Nick O'Leary entry in the list.
+5. Click the "Install" button to install the library.
+6. Once installed, you can include the library in your Arduino sketches by adding `#include <PubSubClient.h>` at the top of your sketch.
+
 
 ### Timelib
 The `timelib.h` library provides functionality for handling time-related operations in Arduino sketches. It allows you to work with time and date, enabling you to synchronize events, schedule tasks, and perform time-based calculations.
