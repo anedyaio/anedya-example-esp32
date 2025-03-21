@@ -13,8 +13,6 @@ Anedya ValueStore provides a way to:
 - Store other attributes of the device that may affect its operation
 
 
-
-
 > [!TIP]
 > Looking for Python SDK? Visit [PyPi](https://pypi.org/project/anedya-dev-sdk/) or [Github Repository](https://github.com/anedyaio/anedya-dev-sdk-pyhton)
 

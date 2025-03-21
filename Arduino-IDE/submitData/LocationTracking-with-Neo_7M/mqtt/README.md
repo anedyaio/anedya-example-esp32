@@ -32,6 +32,9 @@ Following steps outline the overall steps to setup a project. You can read more 
 3. Set up your WiFi credentials by replacing `SSID` and `PASSWORD` with your WiFi network's SSID and password.
 4. Specify the pin number connected to the Tx and Rx pin of gps module.
 
+> [!NOTE] 
+> This example utilizes `Anedya Root CA 3 (ECC - 256)(Pem format)` for establishing a secure connection to the Anedya. If you opt to use an `Anedya Root CA 1 (RSA - 2048)` certificate instead, please ensure that you provide the necessary additional certificate details regarding the RSA certificate before initiating the connection.
+
 ## Usage
 
 1. Connect your device to a WiFi network.

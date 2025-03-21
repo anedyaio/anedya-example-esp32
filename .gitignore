@@ -36,3 +36,5 @@ sdkconfig.ci
 
 #Ignore test file
 *.py 
+
+test.ino
