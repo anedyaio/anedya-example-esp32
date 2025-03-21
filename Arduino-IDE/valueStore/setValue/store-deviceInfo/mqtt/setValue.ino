@@ -110,12 +110,12 @@ void loop()
                        "Free Sketch Space:" + String(ESP.getFreeSketchSpace() / 1024) + " KB" + ", " +
                        "Flash Speed:" + String(ESP.getFlashChipSpeed() / 1000000) + " MHz";
 
-    anedya_setStrValue("Device Info", boardInfo); /* anedya_setValue("<-KEY->","<-dataType->","<-VALUE->")
+    anedya_setStrValue("DeviceInfo", boardInfo); /* anedya_setValue("<-KEY->","<-dataType->","<-VALUE->")
                                                    1 parameter- key,
                                                    2 parameter- The value can hold any of the following types of data: string, binary, float, boolean
                                                    3 parameter- value.  For detailed info, visit-https://docs.anedya.io/valuestore/intro/        */
     float float_num = 25.25;
-    anedya_setFloatValue("float Num", float_num);
+    anedya_setFloatValue("FloatNum", float_num);
 
     timer = millis();
   }

@@ -89,7 +89,7 @@ void loop()
   updateInterval = 15000;
   if (millis() - timer >= updateInterval)
   {
-    anedya_getNodeValue("Device Info");
+    anedya_getNodeValue("DeviceInfo");
     anedya_getGlobalValue("global-key-value", "global-key");
     timer = millis();
   }
