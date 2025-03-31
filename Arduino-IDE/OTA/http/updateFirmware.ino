@@ -107,7 +107,7 @@ void setup()
         Serial.print(".");
     }
     Serial.println();
-    Serial.print("Connecting to v2, IP address: ");
+    Serial.print("Connecting, IP address: ");
     Serial.println(WiFi.localIP());
 
     ncc_client.setCACert(ca_cert); // Set Root CA certificate
