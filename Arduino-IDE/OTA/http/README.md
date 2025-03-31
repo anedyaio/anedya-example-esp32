@@ -6,12 +6,12 @@ This Arduino sketch allows you to connect your device to a WiFi network and upda
 
 ## Anedya OTA
 Using Anedya, you can deploy and manage OTA Updates for thousands of devices. You can target specific groups of devices, roll out in a phased manner, and even automatically abort if something goes wrong. Overall, an OTA Update involves the following steps:
-    - **You upload an asset:** A firmware, executable binary, video file, or even a zip file containing multiple files, which is called an Asset in terms of Anedya and can be deployed.
-    - **Create a Deployment:** Create a deployment by specifying which devices to target, specify stages of deployment, and auto-abort criteria.
-    - **Device fetches new deployments:** Device polls Anedya's MQTT or HTTP APIs at regular intervals (say every 3 Hours). Anedya will automatically provide information on applicable deployments.
-    - **Device downloads the asset:** The device can then download the asset and notify Anedya that the update process has begun.
-    - **Installation finishes**: The device performs installation actions.
-    - **Device status update:** The device acknowledges Anedya about the success or failure of the update process.
+    1. **Upload an Asset:** This can be a firmware, executable binary, video file, or a zip file containing multiple files, known as an Asset in Anedya's terms.
+    2. **Create a Deployment:** Specify target devices, deployment stages, and auto-abort criteria.
+    3. **Fetch New Deployments:** Devices poll Anedya's MQTT or HTTP APIs regularly (e.g., every 3 hours) to receive applicable deployment information.
+    4. **Download the Asset:** Devices download the asset and notify Anedya that the update process has started.
+    5. **Complete Installation:** Devices perform the necessary installation actions.
+    6. **Update Device Status:** Devices inform Anedya of the update's success or failure.
 
 ## Set-Up Project in Anedya Dashboard
 
