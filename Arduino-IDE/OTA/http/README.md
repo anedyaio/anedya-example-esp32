@@ -5,7 +5,7 @@
 This Arduino sketch allows you to connect your device to a WiFi network and update your firmware.
 
 ## Anedya OTA
-Using Anedya, you can deploy and manage OTA Updates for thousands of devices. You can target specific groups of devices, roll out in a phased manner, and even automatically abort if something goes wrong. Overall, an OTA Update involves the following steps:
+Using Anedya, you can deploy and manage OTA Updates for thousands of devices. You can target specific groups of devices, roll out in a phased manner, and even automatically abort if something goes wrong. Overall, an OTA Update involves the following steps: 
 
 1. **Upload an Asset:** This can be a firmware, executable binary, video file, or a zip file containing multiple files, known as an Asset in Anedya's terms.
 
