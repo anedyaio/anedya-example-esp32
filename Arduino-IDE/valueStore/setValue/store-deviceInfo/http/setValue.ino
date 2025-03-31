@@ -29,6 +29,7 @@ const char *PHYSICAL_DEVICE_ID = ""; // Fill your device Id , that you can get f
 const char *SSID = "";     
 const char *PASSWORD = ""; 
 
+// Anedya Root CA 3 (ECC - 256)(Pem format)| [https://docs.anedya.io/device/mqtt-endpoints/#tls]
 const char *ca_cert = R"literal(
   -----BEGIN CERTIFICATE-----
 MIICDDCCAbOgAwIBAgITQxd3Dqj4u/74GrImxc0M4EbUvDAKBggqhkjOPQQDAjBL
@@ -90,7 +91,7 @@ void loop() {
                    "Free Sketch Space:" + String(ESP.getFreeSketchSpace() / 1024) + " KB" +", "+
                    "Flash Speed:" + String(ESP.getFlashChipSpeed() / 1000000) + " MHz";
 
-  anedya_setValue("001", "string", boardInfo); /* anedya_setValue("<-KEY->","<-dataType->","<-VALUE->")
+  anedya_setValue("DeviceInfo", "string", boardInfo); /* anedya_setValue("<-KEY->","<-dataType->","<-VALUE->")
                                                  1 parameter- key, 
                                                  2 parameter- The value can hold any of the following types of data: string, binary, float, boolean
                                                  3 parameter- value.  For detailed info, visit-https://docs.anedya.io/valuestore/intro/        */

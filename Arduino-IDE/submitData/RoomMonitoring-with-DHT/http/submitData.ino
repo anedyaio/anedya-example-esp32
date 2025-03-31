@@ -40,6 +40,7 @@ const char *PHYSICAL_DEVICE_ID = "PHYSICAL-DEVICE-ID"; // Fill your device Id , 
 const char *SSID = "";     
 const char *PASSWORD = ""; 
 
+// Anedya Root CA 3 (ECC - 256)(Pem format)| [https://docs.anedya.io/device/mqtt-endpoints/#tls]
 const char *ca_cert = R"literal(
   -----BEGIN CERTIFICATE-----
 MIICDDCCAbOgAwIBAgITQxd3Dqj4u/74GrImxc0M4EbUvDAKBggqhkjOPQQDAjBL

@@ -41,8 +41,7 @@ const char *PHYSICAL_DEVICE_ID = ""; // Fill your device Id , that you can get f
 const char *SSID = "";     
 const char *PASSWORD = ""; 
 
-// Root CA Certificate
-// fill anedya root certificate. it can be get from [https://docs.anedya.io/device/mqtt-endpoints/#tls]
+// Anedya Root CA 3 (ECC - 256)(Pem format)| [https://docs.anedya.io/device/mqtt-endpoints/#tls]
 const char *ca_cert = R"EOF(                           
 -----BEGIN CERTIFICATE-----
 MIICDDCCAbOgAwIBAgITQxd3Dqj4u/74GrImxc0M4EbUvDAKBggqhkjOPQQDAjBL

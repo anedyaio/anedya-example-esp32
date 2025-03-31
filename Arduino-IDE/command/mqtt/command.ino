@@ -43,8 +43,8 @@ const int mqtt_port = 8883;                                                // MQ
 String responseTopic = "$anedya/device/" + String(PHYSICAL_DEVICE_ID) + "/response"; // MQTT topic for device responses
 String errorTopic = "$anedya/device/" + String(PHYSICAL_DEVICE_ID) + "/errors";      // MQTT topic for device errors
 String commandTopic = "$anedya/device/" + String(PHYSICAL_DEVICE_ID) + "/commands";  // MQTT topic for device commands
-// Root CA Certificate
-// fill anedya root certificate. it can be get from [https://docs.anedya.io/device/mqtt-endpoints/#tls]
+
+// Anedya Root CA 3 (ECC - 256)(Pem format)| [https://docs.anedya.io/device/mqtt-endpoints/#tls]
 const char *ca_cert = R"EOF(                           
 -----BEGIN CERTIFICATE-----
 MIICDDCCAbOgAwIBAgITQxd3Dqj4u/74GrImxc0M4EbUvDAKBggqhkjOPQQDAjBL
@@ -300,8 +300,6 @@ void setDevice_time()
     connectToMQTT();
   } // mqtt connect check end
 } // set device time function end
-
-
 
 void anedya_sendHeartbeat()
 {

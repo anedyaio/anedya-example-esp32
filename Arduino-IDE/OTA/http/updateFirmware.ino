@@ -1,6 +1,6 @@
 /*
 
-                                    OTA (Over The Air) Firmware Update
+                                Anedya OTA (Over The Air) Firmware Update
                                     # Dashboard Setup
                                         1. Create account and login
                                         2. Create new project.
@@ -29,6 +29,7 @@ const char *PHYSICAL_DEVICE_ID = ""; // Fill your device Id , that you can get f
 const char *SSID = "";
 const char *PASSWORD = "";
 
+// Anedya Root CA 3 (ECC - 256)(Pem format)| [https://docs.anedya.io/device/mqtt-endpoints/#tls]
 static const char *ca_cert = R"EOF(
 -----BEGIN CERTIFICATE-----
 MIICDDCCAbOgAwIBAgITQxd3Dqj4u/74GrImxc0M4EbUvDAKBggqhkjOPQQDAjBL
@@ -133,7 +134,7 @@ void loop()
             anedya_update_ota_status(deploymentID, "start");
 
             Serial.println("Starting OTA");
-            HttpsOTA.begin(assetURL, ca_cert);
+            HttpsOTA.begin(assetURL, ca_cert,false);
             Serial.print(" OTA in progress ..");
             while (1)
             {
@@ -153,14 +154,15 @@ void loop()
                 }
                 delay(1000);
             }
+        }else{
+            Serial.println("No update available.");
         }
     }
     anedya_sendHeartbeat(); // sending heartbeat
     delay(5000);
 }
 
-/*<--------------------------------------Function Defination section------------------------------------------------------------------------->*/
-// ----------------------------Function to configure time synchronization with Anedya server-----------
+// ----------------------------Function to synchronize time -----------
 // For more info, visit [https://docs.anedya.io/device/api/http-time-sync/]
 void setDevice_time()
 {
@@ -212,8 +214,6 @@ void setDevice_time()
         setTime(currentTimeSeconds); // Setting the device time based on the computed current time
     }
 }
-
-//---------------------------------- Function to -----------------------------------
 
 // ---------------------- Function to check for OTA update ----------------------
 bool anedya_check_ota_update(char *assetURL, char *deploymentID)
@@ -333,7 +333,7 @@ void anedya_update_ota_status(char *deploymentID, char *deploymentStatus)
     }
 }
 
-//---------------------------------- Function for send heartbeat -----------------------------------
+//---------------------------------- Function to send heartbeat -----------------------------------
 void anedya_sendHeartbeat()
 {
     if (WiFi.status() == WL_CONNECTED)

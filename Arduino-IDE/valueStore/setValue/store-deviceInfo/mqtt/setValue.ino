@@ -37,8 +37,8 @@ const int mqtt_port = 8883;                                                 // M
 String responseTopic = "$anedya/device/" + String(PHYSICAL_DEVICE_ID) + "/response"; // MQTT topic for device responses
 String errorTopic = "$anedya/device/" + String(PHYSICAL_DEVICE_ID) + "/errors";      // MQTT topic for device errors
 
-// Root CA Certificate
-// fill anedya root certificate. it can be get from [https://docs.anedya.io/device/mqtt-endpoints/#tls]
+
+// Anedya Root CA 3 (ECC - 256)(Pem format) |[https://docs.anedya.io/device/mqtt-endpoints/#tls]
 const char *ca_cert = R"EOF(                           
 -----BEGIN CERTIFICATE-----
 MIICDDCCAbOgAwIBAgITQxd3Dqj4u/74GrImxc0M4EbUvDAKBggqhkjOPQQDAjBL
@@ -110,12 +110,12 @@ void loop()
                        "Free Sketch Space:" + String(ESP.getFreeSketchSpace() / 1024) + " KB" + ", " +
                        "Flash Speed:" + String(ESP.getFlashChipSpeed() / 1000000) + " MHz";
 
-    anedya_setStrValue("Device Info", boardInfo); /* anedya_setValue("<-KEY->","<-dataType->","<-VALUE->")
+    anedya_setStrValue("DeviceInfo", boardInfo); /* anedya_setValue("<-KEY->","<-dataType->","<-VALUE->")
                                                    1 parameter- key,
                                                    2 parameter- The value can hold any of the following types of data: string, binary, float, boolean
                                                    3 parameter- value.  For detailed info, visit-https://docs.anedya.io/valuestore/intro/        */
     float float_num = 25.25;
-    anedya_setFloatValue("float Num", float_num);
+    anedya_setFloatValue("FloatNum", float_num);
 
     timer = millis();
   }

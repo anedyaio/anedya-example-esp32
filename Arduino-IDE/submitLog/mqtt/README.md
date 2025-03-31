@@ -9,12 +9,17 @@ This Arduino sketch allows you to submit your device log to the Anedya.
 > [!WARNING]
 > This code is for hobbyists for learning purposes. Not recommended for production use!!
 
-## Set-Up
 
-> [!IMPORTANT]
-> Prerequisite: Set up the dashboard and fill the connection key and physical device ID in the firmware. For detailed guidance, visit [here](https://github.com/anedyaio/anedya-example-nodemcu/blob/main/README.md) 
+### Code Set-Up
 
-### Code Set-Up 
+1. Replace `<PHYSICAL-DEVICE-UUID>` with your 128-bit UUID of the physical device.
+2. Replace `<CONNECTION-KEY>` with your connection key, which you can obtain from the node description.
+3. Set up your WiFi credentials by replacing `SSID` and `PASSWORD` with your WiFi network's SSID and password.
+
+> [!NOTE] 
+> This example utilizes `Anedya Root CA 3 (ECC - 256)(Pem format)` for establishing a secure connection to the Anedya. If you opt to use an `Anedya Root CA 1 (RSA - 2048)` certificate instead, please ensure that you provide the necessary additional certificate details regarding the RSA certificate before initiating the connection.
+
+### Important Functions 
 
 To submit the the log, use : 
 ```
