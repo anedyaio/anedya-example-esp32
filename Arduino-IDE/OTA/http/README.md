@@ -4,6 +4,15 @@
 
 This Arduino sketch allows you to connect your device to a WiFi network and update your firmware.
 
+## Anedya OTA
+Using Anedya, you can deploy and manage OTA Updates for thousands of devices. You can target specific groups of devices, roll out in a phased manner, and even automatically abort if something goes wrong. Overall, an OTA Update involves the following steps:
+    - **You upload an asset:** A firmware, executable binary, video file, or even a zip file containing multiple files, which is called an Asset in terms of Anedya and can be deployed.
+    - **Create a Deployment:** Create a deployment by specifying which devices to target, specify stages of deployment, and auto-abort criteria.
+    - **Device fetches new deployments:** Device polls Anedya's MQTT or HTTP APIs at regular intervals (say every 3 Hours). Anedya will automatically provide information on applicable deployments.
+    - **Device downloads the asset:** The device can then download the asset and notify Anedya that the update process has begun.
+    - **Installation finishes**: The device performs installation actions.
+    - **Device status update:** The device acknowledges Anedya about the success or failure of the update process.
+
 ## Set-Up Project in Anedya Dashboard
 
 Following steps outline the overall steps to setup and OTA Deployment. You can read more about the steps [here](https://docs.anedya.io/ota/)
@@ -32,8 +41,8 @@ Following steps outline the overall steps to setup and OTA Deployment. You can r
 ## Dependencies
 
 ### HttpsOTAUpdate
-
 The HttpsOTAUpdate.h library simplifies the process of updating firmware over-the-air using secure HTTPS connections. This library ensures that your firmware updates are delivered securely over the internet, allowing for easy and safe updates of your device.
+**Note:** Make sure you have provided esp32 board url`https://dl.espressif.com/dl/package_esp32_index.json` in the preferences/additional boards manager URL's of your IDE.
 
 ### ArduinoJson
 
