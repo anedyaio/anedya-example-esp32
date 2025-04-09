@@ -13,7 +13,7 @@ This Arduino sketch allows you to connect your device to a WiFi network and send
 
 ## Set up project in Anedya console
 
-Following steps outline the overall steps to setup a project. You can read more about the steps [here](https://docs.anedya.io/getting-started/project-setup/)
+Following steps outline the overall steps to setup a project. You can read more about the steps [here](https://docs.anedya.io/essentials/concepts/)
 
 1. Create account and login
 2. Create new project.
