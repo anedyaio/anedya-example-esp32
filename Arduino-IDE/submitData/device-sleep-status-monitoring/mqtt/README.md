@@ -6,30 +6,31 @@
 This Arduino sketch allows you to connect your device to a WiFi network and send device sleep status data to the Anedya platform.
 
 > [!NOTE]
-> The objective of this project is to provide a clear and practical example showcasing how to use the Anedya platform's status data submission feature, enabling developers to effectively integrate device state monitoring into their IoT applications.
+> The objective of this project is to provide a clear and practical example demonstrating how to utilize the Anedya platform’s status data submission feature. It aims to help developers effectively integrate the status data type into their IoT applications.
 
 > [!WARNING]
 > This code is for hobbyists for learning purposes. Not recommended for production use!!
 
 ## Set up project in Anedya console
 
-Following steps outline the overall steps to setup a project. You can read more about the steps [here](https://docs.anedya.io/getting-started/quickstart/#create-a-new-project)
+Following steps outline the overall steps to setup a project. You can read more about the steps [here](https://docs.anedya.io/getting-started/project-setup/)
 
 1. Create account and login
 2. Create new project.
-3. Create variables: `deviceSleepStatus`.
+3. Create a status variables: `deviceSleepStatus`.
 4. Create a node (e.g., for home- Room1 or Device1).
-
- > [!TIP]
- > For more details, Visit anedya [documentation](https://docs.anedya.io?utm_source=github&utm_medium=link&utm_campaign=github-examples&utm_content=esp32)
 
 > [!IMPORTANT]
 > Variable Identifier is essential; fill it accurately.
 
+ > [!TIP]
+ > For more details, Visit anedya [documentation](https://docs.anedya.io?utm_source=github&utm_medium=link&utm_campaign=github-examples&utm_content=esp32)
+
+
 ## Code Set-Up
 
 1. Replace `<PHYSICAL_DEVICE_ID>` with your 128-bit UUID of the physical device.
-2. Replace `<CONNECTION_KEY>` with your connection key, which you can obtain from the node description.
+2. Replace `<CONNECTION_KEY>` with your connection key, which you can obtain from the node details page.
 3. Set up your WiFi credentials by replacing `YOUR_WIFI_SSID` and `YOUR_WIFI_PASSWORD` with your WiFi network's SSID and password.
 
 > [!NOTE] 
@@ -37,10 +38,10 @@ Following steps outline the overall steps to setup a project. You can read more 
 
 ## Usage
 
-1. Connect your device to a WiFi network.
-2. Upload this code to your device.
-3. Open the Serial Monitor to view the device's output.
-4. The device will connect to the WiFi network, send the device sleep/wake status data to the Anedya.
+1. Enable your mobile or system hotspot.
+2. Upload the provided code to your device using your preferred IDE.
+3. Open the Serial Monitor to observe the device logs.
+4. Once connected to the WiFi network, the device will automatically send its sleep/wake status to the Anedya platform.
 
 
 ## Dependencies
