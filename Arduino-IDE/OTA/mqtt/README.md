@@ -1,6 +1,6 @@
 [<img src="https://img.shields.io/badge/Anedya-Documentation-blue?style=for-the-badge">](https://docs.anedya.io?utm_source=github&utm_medium=link&utm_campaign=github-examples&utm_content=esp32)
 
-# Update your device firmware - OTA Example (HTTP)
+# Update your device firmware - OTA Example (MQTT)
 
 This Arduino sketch enables your device to connect to a WiFi network and then check for the availability of a new firmware update. It demonstrates how you can use the Anedya OTA service to easily keep your IoT devices up to date with the latest firmware.
 
@@ -19,27 +19,34 @@ Using Anedya, you can deploy and manage OTA Updates for thousands of devices. Yo
 
 6. **Update Device Status:** Devices inform Anedya of the update's success or failure.
 
-## Set-Up Project in Anedya Dashboard
+> [!NOTE]
+> The objective of this project is to provide a clear and practical example demonstrating how to utilize the Anedya platform's OTA (Over the Air) feature. It aims to help developers effectively integrate the OTA feature into their IoT applications.
+
+> [!WARNING]
+> This code is for hobbyists for learning purposes. Not recommended for production use!!
+
+## Set up project in Anedya console
 
 Following steps outline the overall steps to setup and OTA Deployment. You can read more about the steps [here](https://docs.anedya.io/ota/)
 
 1. Create account and login
 2. Create new project.
 3. Create a node (e.g., for home- Room1 or study room).
-4. Upload the Asset.
+4. Upload the Asset (e.g., firmware).
 5. Create a Deploymnent.
 
  > [!TIP]
  > For more details, Visit anedya [documentation](https://docs.anedya.io?utm_source=github&utm_medium=link&utm_campaign=github-examples&utm_content=esp32)
 
+ > [!TIP]
+ > For more details, Visit anedya [documentation](https://docs.anedya.io?utm_source=github&utm_medium=link&utm_campaign=github-examples&utm_content=esp32)
 
-## Hardware Set-Up
 
-### Code Set-Up
+## Code Set up
 
-1. Replace `<PHYSICAL-DEVICE-UUID>` with your 128-bit UUID of the physical device.
-2. Replace `<CONNECTION-KEY>` with your connection key, which you can obtain from the node description.
-3. Set up your WiFi credentials by replacing `SSID` and `PASSWORD` with your WiFi network's SSID and password.
+1. Replace `<PHYSICAL_DEVICE_ID>` with your 128-bit UUID of the physical device.
+2. Replace `<CONNECTION_KEY>` with your connection key, which you can obtain from the node details page.
+3. Set up your WiFi credentials by replacing `YOUR_WIFI_SSID` and `YOUR_WIFI_PASSWORD` with your WiFi network's SSID and password.
 
 > [!NOTE] 
 > This example utilizes `Anedya Root CA 3 (ECC - 256)(Pem format)` for establishing a secure connection to the Anedya. If you opt to use an `Anedya Root CA 1 (RSA - 2048)` certificate instead, please ensure that you provide the necessary additional certificate details regarding the RSA certificate before initiating the connection.
@@ -60,6 +67,17 @@ This repository contains the ArduinoJson library, which provides efficient JSON 
 4. Click on the ArduinoJson entry in the list.
 5. Click the "Install" button to install the library.
 6. Once installed, you can include the library in your Arduino sketches by adding `#include <ArduinoJson.h>` at the top of your sketch.
+
+### PubSubClient
+The PubSubClient library provides a client for doing simple publish/subscribe messaging with a server that supports MQTT. It allows you to easily publish and subscribe to topics, making it ideal for IoT projects, data logging, and more.
+
+1. Open the Arduino IDE.
+2. Go to `Sketch > Include Library > Manage Libraries...`.
+3. In the Library Manager, search for "PubSubClient".
+4. Click on the PubSubClient by Nick O'Leary entry in the list.
+5. Click the "Install" button to install the library.
+6. Once installed, you can include the library in your Arduino sketches by adding `#include <PubSubClient.h>` at the top of your sketch.
+
 
 ### Timelib
 

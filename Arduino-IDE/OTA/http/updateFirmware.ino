@@ -21,7 +21,7 @@
 #include <ArduinoJson.h>         // Include the Arduino library to make json or abstract the value from the json
 #include <TimeLib.h>             // Include the Time library to handle time synchronization with ATS (Anedya Time Services)
 
-/*-----------------------------------------Variable section------------------------------------------------------------------*/
+/*-----------------------------Variable section-------------------------------------------*/
 // ----------------------------- Anedya and Wifi credentials --------------------------------------------
 String REGION_CODE = "ap-in-1";      // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/#region]
 const char *CONNECTION_KEY = "";     // Fill your connection key, that you can get from your node description
@@ -54,7 +54,7 @@ long check_for_ota_update_interval = 10000;
 NetworkClientSecure ncc_client; // Initialize the NetworkClientSecure object
 static HttpsOTAStatus_t otastatus;
 
-/*------------------------------------Function declarations--------------------------------------------------------------------*/
+/*------------------------Function declarations-------------------------------------------------*/
 void setDevice_time(); // Function to configure the device time with real-time from ATS (Anedya Time Services)
 bool anedya_check_ota_update(char *assetURL, char *deploymentID);
 void anedya_update_ota_status(char *deploymentID, char *deploymentStatus);
@@ -91,7 +91,7 @@ void HttpEvent(HttpEvent_t *event)
     }
 }
 
-/*----------------------------------------SETUP SECTION-------------------------------------------------------------------------------*/
+/*-----------------------------SETUP SECTION----------------------------------*/
 void setup()
 {
     Serial.begin(115200); // Initializing serial communication, fill braud rate according to your device compatible
@@ -118,7 +118,7 @@ void setup()
     // Connecting to ATS(Anedya Time Services) and configuring time synchronization
     setDevice_time(); // Calling function to configure time synchronization
 }
-/*----------------------------------------------LOOP SECTION---------------------------------------------------------------------------*/
+/*---------------------LOOP SECTION-------------------------------*/
 
 void loop()
 {
@@ -134,7 +134,7 @@ void loop()
             anedya_update_ota_status(deploymentID, "start");
 
             Serial.println("Starting OTA");
-            HttpsOTA.begin(assetURL, ca_cert,false);
+            HttpsOTA.begin(assetURL, ca_cert, false);
             Serial.print(" OTA in progress ..");
             while (1)
             {
@@ -154,7 +154,9 @@ void loop()
                 }
                 delay(1000);
             }
-        }else{
+        }
+        else
+        {
             Serial.println("No update available.");
         }
     }
