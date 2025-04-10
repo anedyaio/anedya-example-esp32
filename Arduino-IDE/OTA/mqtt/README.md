@@ -20,7 +20,7 @@ Using Anedya, you can deploy and manage OTA Updates for thousands of devices. Yo
 6. **Update Device Status:** Devices inform Anedya of the update's success or failure.
 
 > [!NOTE]
-> The objective of this project is to provide a clear and practical example demonstrating how to utilize the Anedya platform's OTA (Over the Air) feature. It aims to help developers effectively integrate the OTA feature into their IoT applications.
+> The objective of this project is to provide a clear and practical example demonstrating how to utilize the Anedya's OTA (Over the Air) feature. It aims to help developers effectively integrate the OTA feature into their IoT applications.
 
 > [!WARNING]
 > This code is for hobbyists for learning purposes. Not recommended for production use!!
@@ -37,10 +37,6 @@ Following steps outline the overall steps to setup and OTA Deployment. You can r
 
  > [!TIP]
  > For more details, Visit anedya [documentation](https://docs.anedya.io?utm_source=github&utm_medium=link&utm_campaign=github-examples&utm_content=esp32)
-
- > [!TIP]
- > For more details, Visit anedya [documentation](https://docs.anedya.io?utm_source=github&utm_medium=link&utm_campaign=github-examples&utm_content=esp32)
-
 
 ## Code Set up
 
