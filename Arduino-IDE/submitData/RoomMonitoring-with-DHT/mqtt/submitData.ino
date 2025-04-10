@@ -36,10 +36,10 @@ bool virtual_sensor = true;
 
 // ----------------------------- Anedya and Wifi credentials --------------------------------------------
 String REGION_CODE = "ap-in-1";                   // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India) | For other country code, visity [https://docs.anedya.io/device/#region]
-const char *CONNECTION_KEY = "";  // Fill your connection key, that you can get from your node description
-const char *PHYSICAL_DEVICE_ID = ""; // Fill your device Id , that you can get from your node description
-const char *SSID = "";     
-const char *PASSWORD = ""; 
+const char *CONNECTION_KEY = "CONNECTION_KEY";  // Fill your connection key, that you can get from your node description
+const char *PHYSICAL_DEVICE_ID = "PHYSICAL_DEVICE_ID"; // Fill your device Id , that you can get from your node description
+const char *SSID = "YOUR_WIFI_SSID";     
+const char *PASSWORD = "YOUR_WIFI_PASSWORD"; 
 
 // Anedya Root CA 3 (ECC - 256)(Pem format)| [https://docs.anedya.io/device/mqtt-endpoints/#tls]
 const char *ca_cert = R"EOF(                           

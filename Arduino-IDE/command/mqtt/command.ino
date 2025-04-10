@@ -10,9 +10,6 @@
                              - Create variables: temperature and humidity.
                             Note: Variable Identifier is essential; fill it accurately.
 
-                            # Hardware Setup
-                            - connect Led at GPIO pin 5(Marked D5 on the ESP32)
-
                   Note: The code is tested on the "Esp-32 Wifi, Bluetooth, Dual Core Chip Development Board (ESP-WROOM-32)"
 
                                                                                            Dated: 28-March-2024
@@ -36,13 +33,13 @@ const char *PASSWORD = "";
 
 // MQTT connection settings
 String str_mqtt_broker="mqtt."+REGION_CODE+".anedya.io";
-const char *mqtt_broker =str_mqtt_broker.c_str() ;                        // MQTT broker address
-const char *mqtt_username = PHYSICAL_DEVICE_ID;                                      // MQTT username
-const char *mqtt_password = CONNECTION_KEY;                                 // MQTT password
-const int mqtt_port = 8883;                                                // MQTT port
-String responseTopic = "$anedya/device/" + String(PHYSICAL_DEVICE_ID) + "/response"; // MQTT topic for device responses
-String errorTopic = "$anedya/device/" + String(PHYSICAL_DEVICE_ID) + "/errors";      // MQTT topic for device errors
-String commandTopic = "$anedya/device/" + String(PHYSICAL_DEVICE_ID) + "/commands";  // MQTT topic for device commands
+const char *mqtt_broker =str_mqtt_broker.c_str() ;                        // MQTT broker 
+const char *mqtt_username = PHYSICAL_DEVICE_ID;                          // MQTT username
+const char *mqtt_password = CONNECTION_KEY;                             // MQTT password
+const int mqtt_port = 8883;                                            // MQTT port
+String responseTopic = "$anedya/device/" + String(PHYSICAL_DEVICE_ID) + "/response"; // Subscribe topic for the anedya responses
+String errorTopic = "$anedya/device/" + String(PHYSICAL_DEVICE_ID) + "/errors";      // Subscribe topic for the anedya errors
+String commandTopic = "$anedya/device/" + String(PHYSICAL_DEVICE_ID) + "/commands";  // Subscribe topic to receive Anedya commands
 
 // Anedya Root CA 3 (ECC - 256)(Pem format)| [https://docs.anedya.io/device/mqtt-endpoints/#tls]
 const char *ca_cert = R"EOF(                           
@@ -120,7 +117,9 @@ void loop()
     connectToMQTT();
   }
   if (millis() - responseTimer > 700 && processCheck && commandId != "")
-  {                                                                                                                                                               // condition block to publish the command processing message
+  {       
+    Serial.println("Executing command...");
+                                                                                                                                                            // condition block to publish the command processing message
     String statusProcessingPayload = "{\"reqId\": \"\",\"commandId\": \"" + commandId + "\",\"status\": \"processing\",\"ackdata\": \"\",\"ackdatatype\": \"\"}"; // payload
     mqtt_client.publish(statusTopic.c_str(), statusProcessingPayload.c_str());                                                                                    // publish the command processing status message
     processCheck = false;
@@ -131,7 +130,7 @@ void loop()
     {
       // Turn the LED on (HIGH)
       digitalWrite(ledPin, HIGH);
-      Serial.println("Led ON");
+      Serial.println("Led turned ON!");
       String statusSuccessPayload = "{\"reqId\": \"\",\"commandId\": \"" + commandId + "\",\"status\": \"success\",\"ackdata\": \"\",\"ackdatatype\": \"\"}";
       mqtt_client.publish(statusTopic.c_str(), statusSuccessPayload.c_str());
     }
@@ -139,7 +138,7 @@ void loop()
     {
       // Turn the LED off (LOW)
       digitalWrite(ledPin, LOW);
-      Serial.println("Led OFF");
+      Serial.println("Led turned OFF!");
       String statusSuccessPayload = "{\"reqId\": \"\",\"commandId\": \"" + commandId + "\",\"status\": \"success\",\"ackdata\": \"\",\"ackdatatype\": \"\"}";
       mqtt_client.publish(statusTopic.c_str(), statusSuccessPayload.c_str());
     }
@@ -211,6 +210,7 @@ void mqttCallback(char *topic, byte *payload, unsigned int length)
   }
   else if (Response.containsKey("command")) // block's to get the command
   {
+    Serial.println("Received Command:" +str_res);
     const char *command = Response["command"].as<const char *>();
     if (strcmp(command, "led") == 0){
 
