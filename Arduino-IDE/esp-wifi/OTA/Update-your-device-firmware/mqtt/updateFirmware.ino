@@ -67,6 +67,7 @@ String timeRes; // variable to handle response
 #define OTA_UPDATE_STATUS_BIT 10
 
 bool deploymentAvailable = false;
+bool statusPublished = false;
 String assetURL = "";
 String deploymentID = "";
 
@@ -125,7 +126,7 @@ void setup()
 
     esp_client.setCACert(ca_cert);                 // Set Root CA certificate
     mqtt_client.setServer(mqtt_broker, mqtt_port); // Set the MQTT server address and port for the MQTT client to connect to anedya broker
-    mqtt_client.setKeepAlive(60);                  // Set the keep alive interval (in seconds) 
+    mqtt_client.setKeepAlive(60);                  // Set the keep alive interval (in seconds)
     mqtt_client.setCallback(mqttCallback);         // Set the callback function to be invoked when MQTT messages are received
     mqtt_client.setBufferSize(MQTT_BUFFER_SIZE);   // Set the MQTT buffer size
     connectToMQTT();                               // Attempt to establish a connection to the anedya broker
@@ -234,7 +235,7 @@ void mqttCallback(char *topic, byte *payload, unsigned int length)
         res[i] = payload[i];
     }
     String str_res(res);
-    Serial.println("payload:" + str_res);
+    Serial.println("Mqtt Message: " + str_res);
     Serial.println();
 
     // Parse the JSON response
@@ -273,6 +274,9 @@ void mqttCallback(char *topic, byte *payload, unsigned int length)
         {
             Serial.println("No update available.");
         }
+        break;
+    case OTA_UPDATE_STATUS_BIT:
+        statusPublished = true;
         break;
     default:
         Serial.println("Unknown response:" + str_res);
@@ -321,7 +325,7 @@ void syncDeviceTime()
             // Convert String object to pointer to a string literal
             const char *jsonPayloadLiteral = jsonPayload.c_str();
             mqtt_client.publish(mqtt_topic, jsonPayloadLiteral);
-        } 
+        }
 
         if (timeRes != "")
         {
@@ -343,9 +347,9 @@ void syncDeviceTime()
             setTime(currentTimeSeconds); // Set the device time based on the computed current time
             Serial.println("\n synchronized!");
             syncTime = false;
-        } 
+        }
     }
-} 
+}
 
 // ---------------------- Function to check for OTA update ----------------------
 bool anedya_check_ota_update()
@@ -383,7 +387,7 @@ void anedya_update_ota_status(String deploymentID, String deploymentStatus)
     String getNextDeploymentTopic_str = "$anedya/device/" + String(PHYSICAL_DEVICE_ID) + "/ota/updateStatus/json";
     const char *getNextDeploymentTopic = getNextDeploymentTopic_str.c_str();
 
-    String getNextDeploymentPayload_str = "{\"reqId\": \"" + String(OTA_UPDATE_BIT) + "\", \"deploymentId\": \"" + deploymentID + "\", \"status\": \"" + deploymentStatus + "\", \"log\": \"OK\" }";
+    String getNextDeploymentPayload_str = "{\"reqId\": \"" + String(OTA_UPDATE_STATUS_BIT) + "\", \"deploymentId\": \"" + deploymentID + "\", \"status\": \"" + deploymentStatus + "\", \"log\": \"OK\" }";
     const char *getNextDeploymentPayload = getNextDeploymentPayload_str.c_str();
 
     mqtt_client.publish(getNextDeploymentTopic, getNextDeploymentPayload);
@@ -405,6 +409,11 @@ void anedya_sendHeartbeat()
     String strLog = "{\"reqId\": \"" + String(HEARTBEAT_BIT) + "\"}";
 
     const char *submitLogPayload = strLog.c_str();
+    statusPublished = false;
     mqtt_client.publish(submitTopic, submitLogPayload);
-    mqtt_client.loop();
+    while (!statusPublished)
+    {
+        mqtt_client.loop();
+        delay(1000);
+    }
 }
