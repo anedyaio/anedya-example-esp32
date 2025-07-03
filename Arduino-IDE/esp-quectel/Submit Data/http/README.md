@@ -24,7 +24,7 @@ For additional help, consult the [Anedya Documentation](https://docs.anedya.io?u
 ## Hardware Setup
 
 1. **Power the EC200U Module**: Connect the EC200U module to a 5V 2A power supply.
-2. **Serial Communication**: With Serial1.
+2. **Serial Communication**: Connect the ESP32 to the EC200U module via `Serial1`. For the ESP32-S3 Dev Board used in testing, this corresponds to GPIO 16 (TX) and GPIO 17 (RX).
 
 ---
 
@@ -52,7 +52,7 @@ To include the `timelib.h` library:
 1. Open the Arduino IDE.
 2. Go to `Sketch > Include Library > Manage Libraries...`.
 3. In the Library Manager, search for "Time".
-4. Click on the ArduinoJson entry in the list(`Time by Michael Margolis`).
+4. Click on the Time  entry in the list(`Time by Michael Margolis`).
 5. Click the "Install" button to install the library.
 6. Once installed, you can include the library in your Arduino sketches by adding `#include <TimeLib.h>` at the top of your sketch.
 

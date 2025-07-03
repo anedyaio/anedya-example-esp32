@@ -57,7 +57,7 @@ void anedya_submitData(const char *variable_identifier, float value, long long t
 void setup()
 {
   Serial.begin(115200);
-  EC200U.begin(115200, SERIAL_8N1, 16, 17);  // Modem TX-> ESP32S3GPIO 16, RX->ESP32S3 GPIO 17
+  EC200U.begin(115200, SERIAL_8N1, 16, 17); // Modem TX-> ESP32S3GPIO 16, RX->ESP32S3 GPIO 17
 
   Serial.println("Initializing...");
   delay(2000);
@@ -137,6 +137,11 @@ void uploadSSLCertificate()
 
   String cmd = "AT+QFOPEN=\"anedyaecc_crt.pem\",1";
   sendATCommand(cmd, 500);
+
+  /* NOTE:
+  The file handle returned by the AT+QFOPEN command is required to write the content of the file.
+  Here, the default file handle 1027 is used, but please note that it is recommended to use the actual file handle returned by the AT+QFOPEN command.
+  */
   String writeFile_cmd = "AT+QFWRITE=1027," + String(certLength) + ",20";
   sendATCommand(writeFile_cmd, 500);
 
@@ -214,7 +219,8 @@ void syncDeviceTimeViaNTP()
         int year, month, day, hour, minute, second;
         int parsed = sscanf(dateTimeStr.c_str(), "%d/%d/%d,%d:%d:%d", &year, &month, &day, &hour, &minute, &second);
 
-        if (parsed != 6) {
+        if (parsed != 6)
+        {
           Serial.println("Error parsing date-time string.");
           return;
         }
@@ -224,20 +230,19 @@ void syncDeviceTimeViaNTP()
 
         // Convert to UNIX timestamp
         tmElements_t tm;
-        tm.Year = year - 1970;  // tm.Year is offset from 1970
+        tm.Year = year - 1970; // tm.Year is offset from 1970
         tm.Month = month;
         tm.Day = day;
         tm.Hour = hour;
         tm.Minute = minute;
         tm.Second = second;
-        
+
         // Convert time to epoch using makeTime
         time_t epochTime = makeTime(tm); // Convert to epoch
         Serial.println("Epoch Time before timezone adjustment: " + String(epochTime));
 
-
         // Print the adjusted epoch time
-        Serial.println("Adjusted Epoch Time for IST: " + String(epochTime));
+        Serial.println("Epoch Time (UTC): " + String(epochTime));
 
         // Set the system time
         setTime(epochTime);
@@ -263,7 +268,7 @@ void syncDeviceTimeViaNTP()
     if (!success)
     {
       Serial.println("Retrying NTP synchronization...");
-      delay(2000);  // Wait before retrying
+      delay(2000); // Wait before retrying
     }
   }
 
@@ -272,7 +277,6 @@ void syncDeviceTimeViaNTP()
     Serial.println("Failed to synchronize time after " + String(maxRetries) + " attempts.");
   }
 }
-
 
 void anedya_submitData(const char *variable_identifier, float value, long long timestamp)
 {
@@ -294,7 +298,7 @@ void anedya_sendHeartbeat()
   // Set URL for HTTP request
   sendATCommand("AT+QHTTPCFG=\"url\",\"https://device.ap-in-1.anedya.io/v1/heartbeat\"", 400);
 
-  String payload="{\"reqId\": \"Heartbeat\"}";
+  String payload = "{\"reqId\": \"Heartbeat\"}";
 
   // HTTP POST command
   String postCmd = "AT+QHTTPPOST=" + String(payload.length()) + ",80,80";
@@ -303,4 +307,3 @@ void anedya_sendHeartbeat()
     sendATCommand(payload, 300); // Send JSON payload
   }
 }
-
