@@ -38,7 +38,7 @@ To send hardware sensor value `virtual_Sensor = false`
 
 1. Replace `<PHYSICAL-DEVICE-UUID>` with your 128-bit UUID of the physical device.
 2. Replace `<CONNECTION-KEY>` with your connection key, which you can obtain from the node description.
-3. Set up your WiFi credentials by replacing `SSID` and `PASSWORD` with your WiFi network's SSID and password.
+3. Set up your WiFi credentials by replacing `REPLACE_WITH_YOUR_SSID` and `REPLACE_WITH_YOUR_PASSWORD` with your WiFi network's SSID and password.
 4. Specify the pin number connected to the DHT sensor.
 
 > [!NOTE] 
@@ -74,20 +74,6 @@ The PubSubClient library provides a client for doing simple publish/subscribe me
 4. Click on the PubSubClient by Nick O'Leary entry in the list.
 5. Click the "Install" button to install the library.
 6. Once installed, you can include the library in your Arduino sketches by adding `#include <PubSubClient.h>` at the top of your sketch.
-
-
-### Timelib
-
-The `timelib.h` library provides functionality for handling time-related operations in Arduino sketches. It allows you to work with time and date, enabling you to synchronize events, schedule tasks, and perform time-based calculations.
-
-To include the `timelib.h` library:
-
-1. Open the Arduino IDE.
-2. Go to `Sketch > Include Library > Manage Libraries...`.
-3. In the Library Manager, search for "Time".
-4. Click on the ArduinoJson entry in the list(`Time by Michael Margolis`).
-5. Click the "Install" button to install the library.
-6. Once installed, you can include the library in your Arduino sketches by adding `#include <TimeLib.h>` at the top of your sketch.
 
 ### DHT-Adafruit
 
