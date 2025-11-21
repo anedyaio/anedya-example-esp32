@@ -19,6 +19,7 @@ Arduino-IDE/OTA/test.ino
 sdkconfig
 sdkconfig.old
 sdkconfig.ci
+development/
 
 # Ignore Devcontainer settings (if not needed for others)
 .devcontainer/
