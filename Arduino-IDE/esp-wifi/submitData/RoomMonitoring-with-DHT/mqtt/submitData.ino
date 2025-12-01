@@ -35,8 +35,8 @@ bool virtual_sensor = true; //(This is true if you don't have a physical sensor)
 #include <DHT.h>              // Include the DHT library for humidity and temperature sensor handling
 
 // ----------------------------- Anedya and Wifi credentials --------------------------------------------
-const char *CONNECTION_KEY = "";     // Fill your connection key, that you can get from your node description
-const char *PHYSICAL_DEVICE_ID = ""; // Fill your device Id , that you can get from your node description
+const char *CONNECTION_KEY = "CONNECTION_KEY";         // Fill your connection key, that you can get from your node description
+const char *PHYSICAL_DEVICE_ID = "PHYSICAL_DEVICE_ID"; // Fill your device Id , that you can get from your node description
 const char *SSID = "REPLACE_WITH_YOUR_SSID";
 const char *PASSWORD = "REPLACE_WITH_YOUR_PASSWORD";
 String REGION_CODE = "ap-in-1"; // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India)
@@ -72,7 +72,7 @@ String errorTopic = "$anedya/device/" + String(PHYSICAL_DEVICE_ID) + "/errors"; 
 #define HEARTBEAT 1
 #define SUBMIT_DATA 2
 
-String submit_data_response; // variable to handle response
+String heartbeat_response, submit_data_response; // variable to handle response
 #define DHT_TYPE DHT11       // Define the type of DHT sensor (DHT11, DHT21, DHT22, AM2301, AM2302, AM2321)
 // Define the pin connected to the DHT sensor
 #define DHT_PIN 5 // pin marked as D5 on the ESP32
@@ -91,59 +91,7 @@ void mqttCallback(char *topic, byte *payload, unsigned int length);
 void anedya_submitData(String datapoint, float sensor_data); // Function to submit data to the Anedya
 void anedya_sendHeartbeat();                                 // Function to send heartbeat to the Anedya
 
-void setup()
-{
-  Serial.begin(115200);                                                      // Initialize serial communication with  your device compatible baud rate
-  delay(1500);                                                               // Delay for 1.5 seconds
-  connectToWiFi();                                                           // Connect to WiFi
-  configTime(19800, 0, "time.anedya.io", "time.google.com", "pool.ntp.org"); // Configure time synchronization with NTP servers
-  delay(2000);                                                               // Delay for 2 seconds to allow time synchronization
-
-  esp_client.setCACert(ca_cert);                 // Set Root CA certificate for secure connection
-  mqtt_client.setServer(mqtt_broker, mqtt_port); // Set the MQTT server address and port for the MQTT client to connect to anedya broker
-  mqtt_client.setKeepAlive(60);                  // Set the keep alive interval (in seconds) for the MQTT connection to maintain connectivity
-  mqtt_client.setCallback(mqttCallback);         // Set the callback function to be invoked when MQTT messages are received
-  connectToMQTT();                               // Attempt to establish a connection to the anedya broker
-  dht.begin();                                   // Initialize the DHT sensor
-}
-
-void loop()
-{
-
-  if (!virtual_sensor)
-  {
-    // Read the temperature and humidity from the DHT sensor
-    Serial.println("Fetching data from the Physical sensor");
-    temperature = dht.readTemperature();
-    humidity = dht.readHumidity();
-    if (isnan(humidity) || isnan(temperature))
-    {
-      Serial.println("Failed to read from DHT !");
-      delay(10000);
-      return;
-    }
-  }
-  else
-  {
-    // Generate random temperature and humidity values
-    Serial.println("Fetching data from the Virtual sensor");
-    temperature = random(20, 30);
-    humidity = random(60, 80);
-  }
-  Serial.print("Temperature : ");
-  Serial.println(temperature);
-  // Submit sensor data to Anedya server
-  anedya_submitData("temperature", temperature); // submit data to the Anedya
-
-  Serial.print("Humidity : ");
-  Serial.println(humidity);
-  anedya_submitData("humidity", humidity); // submit data to the Anedya
-  Serial.println("---------------------------------------------------");
-
-  anedya_sendHeartbeat();
-  delay(5000);
-}
-//<--------------------------------------------------------------------->
+// ----------------------------------------------------
 void connectToWiFi()
 {
   // Connect to WiFi network
@@ -205,6 +153,7 @@ void mqttCallback(char *topic, byte *payload, unsigned int length)
   {
   case HEARTBEAT:
     // Serial.println("Heartbeat Response Received");
+    heartbeat_response = res_str;
     break;
   case SUBMIT_DATA:
     submit_data_response = res_str;
@@ -215,7 +164,65 @@ void mqttCallback(char *topic, byte *payload, unsigned int length)
   }
 }
 
-// Function to send heartbeat to Anedya server
+void setup()
+{
+  Serial.begin(115200);                                                      // Initialize serial communication with  your device compatible baud rate
+  delay(1500);                                                               // Delay for 1.5 seconds
+  connectToWiFi();                                                           // Connect to WiFi
+  configTime(19800, 0, "time.anedya.io", "time.google.com", "pool.ntp.org"); // Configure time synchronization with NTP servers
+  Serial.print("Waiting for time sync...");
+  while ((long long)time(nullptr) < 1700000000)
+  {
+    Serial.print(".");
+    delay(1000);
+  }
+  Serial.println("Done!");
+
+  esp_client.setCACert(ca_cert);                 // Set Root CA certificate for secure connection
+  mqtt_client.setServer(mqtt_broker, mqtt_port); // Set the MQTT broker address and port for the MQTT client to connect to anedya broker
+  mqtt_client.setKeepAlive(60);                  // Set the keep alive interval (in seconds) for the MQTT connection to maintain connectivity
+  mqtt_client.setCallback(mqttCallback);         // Set the callback function to be invoked when MQTT messages are received
+  connectToMQTT();                               // Attempt to establish a connection to the anedya broker
+  dht.begin();                                   // Initialize the DHT sensor
+}
+
+void loop()
+{
+  anedya_sendHeartbeat(); // send heartbeat to the Anedya let it know that the device is online
+  if (!virtual_sensor)
+  {
+    // Read the temperature and humidity from the DHT sensor
+    Serial.println("Fetching data from the Physical sensor");
+    temperature = dht.readTemperature();
+    humidity = dht.readHumidity();
+    if (isnan(humidity) || isnan(temperature))
+    {
+      Serial.println("Failed to read from DHT !");
+      delay(10000);
+      return;
+    }
+  }
+  else
+  {
+    // Generate random temperature and humidity values
+    Serial.println("Fetching data from the Virtual sensor");
+    temperature = random(20, 30);
+    humidity = random(60, 80);
+  }
+  Serial.print("Temperature : ");
+  Serial.println(temperature);
+  // Submit sensor data to Anedya cloud
+  anedya_submitData("temperature", temperature); // submit data to the Anedya
+
+  Serial.print("Humidity : ");
+  Serial.println(humidity);
+  anedya_submitData("humidity", humidity); // submit data to the Anedya
+  Serial.println("---------------------------------------------------");
+  delay(5000);
+}
+
+//<--------------------------------------------------------------------->
+// Function to send heartbeat to Anedya cloud
 // For more info, visit [https://docs.anedya.io/features/heartbeat/]
 void anedya_sendHeartbeat()
 {
@@ -231,9 +238,21 @@ void anedya_sendHeartbeat()
   serializeJson(jsonDoc, payload);
 
   // Publish the heartbeat message to the MQTT topic
+  Serial.print(" Sending Heartbeat: ");
+  Serial.println(payload);
   mqtt_client.publish(topic.c_str(), payload.c_str());
   delay(50);
-  mqtt_client.loop();
+  long long waitForResponse_timestamp = millis();
+  while (millis() - waitForResponse_timestamp < 5000){
+    if (heartbeat_response != "")
+    {
+      Serial.println("Heartbeat Response: " + heartbeat_response);
+      heartbeat_response = "";
+      break;
+    }
+    mqtt_client.loop();
+    delay(100);
+  }
 }
 
 // Function to submit data to Anedya server
@@ -242,25 +261,17 @@ void anedya_submitData(String variable_identifier, float sensor_data)
 {
   if (WiFi.status() != WL_CONNECTED)
     connectToWiFi();
-  boolean check = true;
-  long long waitForResponse_timestamp = millis();
+  mqtt_client.connected() ? (void)0 : connectToMQTT(); // check mqtt connection
   String topic = "$anedya/device/" + String(PHYSICAL_DEVICE_ID) + "/submitdata/json";
   const char *topic_str = topic.c_str();
-  mqtt_client.connected() ? (void)0 : connectToMQTT(); // check mqtt connection
 
-  time_t t = time(nullptr);
-  long long current_time_milli = (long long)t * 1000;
-  if (current_time_milli < 1700000000000)
-  {
-    Serial.println("Invalid timestamp, time sync issue. Device is out of time sync.");
-    return;
-  }
   // Construct the JSON payload with sensor data and timestamp
   JsonDocument jsonDoc;
   jsonDoc["reqId"] = String(SUBMIT_DATA);
   jsonDoc["data"][0]["variable"] = variable_identifier;
   jsonDoc["data"][0]["value"] = sensor_data;
-  jsonDoc["data"][0]["timestamp"] = current_time_milli;
+
+  jsonDoc["data"][0]["timestamp"] = (long long)time(nullptr) * 1000;
 
   String jsonPayload;
   serializeJson(jsonDoc, jsonPayload);
@@ -268,6 +279,8 @@ void anedya_submitData(String variable_identifier, float sensor_data)
   Serial.println(jsonPayload);
   mqtt_client.publish(topic_str, jsonPayload.c_str());
 
+  boolean check = true;
+  long long waitForResponse_timestamp = millis();
   while (check)
   {
     if (millis() - waitForResponse_timestamp >= 5000)
