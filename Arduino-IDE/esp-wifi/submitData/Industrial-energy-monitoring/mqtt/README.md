@@ -1,8 +1,8 @@
 [<img src="https://img.shields.io/badge/Anedya-Documentation-blue?style=for-the-badge">](https://docs.anedya.io?utm_source=github&utm_medium=link&utm_campaign=github-examples&utm_content=esp32)
 
-# Room Monitoring - ESP32+DHT (mqtt)
+# Industrial Energy Monitoring - ESP32 (mqtt)
 
-This Arduino sketch allows you to connect your device to a WiFi network, sync device time and send data to Anedya.
+This Arduino sketch allows you to connect your device to a WiFi network, sync device time and send gateway data to Anedya.
 
 > [!WARNING]
 > This code is for hobbyists for learning purposes. Not recommended for production use!!
@@ -11,27 +11,16 @@ This Arduino sketch allows you to connect your device to a WiFi network, sync de
 
 Following steps outline the overall steps to setup a project. You can read more about the steps [here](https://docs.anedya.io/getting-started/quickstart/#create-a-new-project)
 
-1. Create account and login
+1. Create account and login to the dashboard
 2. Create new project.
 3. Create variables: temperature and humidity.
-4. Create a node (e.g., for home- Room1 or study room).
-
- > [!TIP]
- > For more details, Visit anedya [documentation](https://docs.anedya.io?utm_source=github&utm_medium=link&utm_campaign=github-examples&utm_content=esp32)
+4. Create a parent node (e.g., Gateway Node) and pre-authorize it.
+5. Create a child node (e.g., Child Node 1).
+6. Goto parent node->child nodes->add a Child Node with(Child Node ID 1 + Child Node 2 and Alias(child1))
 
 > [!IMPORTANT]
 > Variable Identifier is essential; fill it accurately.
 
-## Hardware Set-Up
-
-You can run the code without any hardware sensor also,Simply keep `virtual_sensor=true` or
-
-To send hardware sensor value `virtual_Sensor = false`
-
-1. Properly identify your sensor's pins.
-2. Connect sensor VCC pin to 3V3.
-3. Connect sensor GND pin to GND.
-4. Connect sensor signal pin to D5.
 
 ### Code Set-Up
 
@@ -48,8 +37,7 @@ To send hardware sensor value `virtual_Sensor = false`
 1. Connect your device to a WiFi network.
 2. Upload this code to your device.
 3. Open the Serial Monitor to view the device's output.
-4. The device will connect to the WiFi network, read temperature and humidity data from the DHT sensor, and start sending data to the Anedya.
-
+4. The device will connect to the WiFi network, generate the temperature and humidity data and start sending data to the Anedya.
 
 ## Dependencies
 
@@ -73,19 +61,6 @@ The PubSubClient library provides a client for doing simple publish/subscribe me
 4. Click on the PubSubClient by Nick O'Leary entry in the list.
 5. Click the "Install" button to install the library.
 6. Once installed, you can include the library in your Arduino sketches by adding `#include <PubSubClient.h>` at the top of your sketch.
-
-### DHT-Adafruit
-
-The DHT library provides support for DHT sensors (DHT11, DHT21, DHT22, AM2301, AM2302, AM2321) on ESP32 boards. It enables easy interfacing with DHT sensors to read temperature and humidity data accurately.
-
-To include the DHT library in your project:
-
-1. Install the DHT library through the Arduino IDE Library Manager. You can get the library from [here](https://github.com/adafruit/DHT-sensor-library)
-2. Go to `Sketch > Include Library > Manage Libraries...`.
-3. In the Library Manager, search for "DHT" .
-4. Click on the DHT entry in the list (DHT sensor Library by Adafruit Adafruit).
-5. Click the "Install" button to install the library.
-6. Once installed, you can include the library in your Arduino sketches by adding `#include <DHT.h>` at the top of your sketch.
 
 > [!TIP]
 > Looking for Python SDK? Visit [PyPi](https://pypi.org/project/anedya-dev-sdk/) or [Github Repository](https://github.com/anedyaio/anedya-dev-sdk-pyhton)

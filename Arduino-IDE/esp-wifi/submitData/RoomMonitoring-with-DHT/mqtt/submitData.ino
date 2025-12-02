@@ -1,7 +1,6 @@
 /*
 
                             Room Monitoring Using ESP32 + DHT sensor (mqtt)
-                Disclaimer: This code is for hobbyists for learning purposes. Not recommended for production use!!
 
                             # Dashboard Setup
                              - Create account and login to the dashboard
@@ -19,7 +18,6 @@
                   Note: The code is tested on the "Esp-32 Wifi, Bluetooth, Dual Core Chip Development Board (ESP-WROOM-32)"
 
                                                                                            Dated: 21-Nov-2025
-
 */
 
 #include <Arduino.h>
@@ -35,8 +33,8 @@ bool virtual_sensor = true; //(This is true if you don't have a physical sensor)
 #include <DHT.h>              // Include the DHT library for humidity and temperature sensor handling
 
 // ----------------------------- Anedya and Wifi credentials --------------------------------------------
-const char *CONNECTION_KEY = "CONNECTION_KEY";         // Fill your connection key, that you can get from your node description
-const char *PHYSICAL_DEVICE_ID = "PHYSICAL_DEVICE_ID"; // Fill your device Id , that you can get from your node description
+const char *CONNECTION_KEY = "REPLACE_WITH_YOUR_CONNECTION_KEY";         // Fill your connection key, that you can get from your node description
+const char *PHYSICAL_DEVICE_ID = "REPLACE_WITH_YOUR_PHYSICAL_DEVICE_ID"; // Fill your device Id , that you can get from your node description
 const char *SSID = "REPLACE_WITH_YOUR_SSID";
 const char *PASSWORD = "REPLACE_WITH_YOUR_PASSWORD";
 String REGION_CODE = "ap-in-1"; // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India)
@@ -94,46 +92,48 @@ void anedya_sendHeartbeat();                                 // Function to send
 // ----------------------------------------------------
 void connectToWiFi()
 {
-  // Connect to WiFi network
-  WiFi.begin(SSID, PASSWORD);
-  Serial.println();
-  Serial.print("Connecting to WiFi...");
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println();
-  Serial.print("Connected, IP address: ");
-  Serial.println(WiFi.localIP());
-  Serial.println(WiFi.gatewayIP());
-  Serial.println(WiFi.dnsIP());
+    // Connect to WiFi network
+    WiFi.begin(SSID, PASSWORD);
+    Serial.println();
+    Serial.print("Connecting to WiFi with ssid: " + String(SSID) + ", password: " + String(PASSWORD) + " ...");
+    short retry_count = 0;
+    while (WiFi.status() != WL_CONNECTED)
+    {
+        delay(500);
+        Serial.print(".");
+        retry_count++;
+        if (retry_count > 15)
+            esp_restart();
+    }
+    Serial.println();
+    Serial.print("Connected, IP address: ");
+    Serial.println(WiFi.localIP());
+    Serial.println(WiFi.gatewayIP());
+    Serial.println(WiFi.dnsIP());
 }
 
 void connectToMQTT()
 {
-  if (WiFi.status() != WL_CONNECTED)
-  {
-    connectToWiFi();
-  }
-  while (!mqtt_client.connected())
-  {
-    const char *client_id = PHYSICAL_DEVICE_ID;
-    Serial.print("Connecting to Anedya Broker....... ");
-    if (mqtt_client.connect(client_id, mqtt_username, mqtt_password))
+    if (WiFi.status() != WL_CONNECTED)
+        connectToWiFi();
+    while (!mqtt_client.connected())
     {
-      Serial.println("Connected to Anedya broker");
-      mqtt_client.subscribe(responseTopic.c_str()); // subscribe on the response topic to get response
-      mqtt_client.subscribe(errorTopic.c_str());    // subscibe on the error topic to get error
+        const char *client_id = PHYSICAL_DEVICE_ID;
+        Serial.println("Connecting to Anedya Broker with client id: " + String(client_id) + "username: " + String(mqtt_username) + "password: " + String(mqtt_password) + " ....... ");
+        if (mqtt_client.connect(client_id, mqtt_username, mqtt_password))
+        {
+            Serial.println("Connected to Anedya broker");
+            mqtt_client.subscribe(responseTopic.c_str()); // subscribe on the response topic to get response
+            mqtt_client.subscribe(errorTopic.c_str());    // subscibe on the error topic to get error
+        }
+        else
+        {
+            Serial.print("Failed to connect to Anedya broker, rc=");
+            Serial.print(mqtt_client.state());
+            Serial.println(" Retrying in 5 seconds.");
+            delay(5000);
+        }
     }
-    else
-    {
-      Serial.print("Failed to connect to Anedya broker, rc=");
-      Serial.print(mqtt_client.state());
-      Serial.println(" Retrying in 5 seconds.");
-      delay(5000);
-    }
-  }
 }
 void mqttCallback(char *topic, byte *payload, unsigned int length)
 {
@@ -238,7 +238,7 @@ void anedya_sendHeartbeat()
   serializeJson(jsonDoc, payload);
 
   // Publish the heartbeat message to the MQTT topic
-  Serial.print(" Sending Heartbeat: ");
+  Serial.print("Sending Heartbeat: ");
   Serial.println(payload);
   mqtt_client.publish(topic.c_str(), payload.c_str());
   delay(50);
@@ -255,8 +255,8 @@ void anedya_sendHeartbeat()
   }
 }
 
-// Function to submit data to Anedya server
-// For more info, visit [https://docs.anedya.io/devicehttpapi/submitdata/]
+// Function to submit data to Anedya Cloud
+// For more info, visit [https://docs.anedya.io/device/api/submitdata/]
 void anedya_submitData(String variable_identifier, float sensor_data)
 {
   if (WiFi.status() != WL_CONNECTED)
@@ -294,11 +294,16 @@ void anedya_submitData(String variable_identifier, float sensor_data)
       Serial.print("Submit Data Response: ");
       Serial.println(submit_data_response);
       // Parse the JSON response
-      JsonDocument jsonResponse;                           // Declare a JSON document with a capacity of 200 bytes
-      deserializeJson(jsonResponse, submit_data_response); // Deserialize the JSON response from the server into the JSON document
-      int errorCode = jsonResponse["errorcode"];           // Get the errorcode from the JSON document
+      JsonDocument jsonResponse;                           
+      deserializeJson(jsonResponse, submit_data_response); 
+      int errorCode = jsonResponse["errorcode"];           
       if (errorCode == 0)
         Serial.println("Data pushed to Anedya!!");
+      else if(errorCode == 4040){
+        Serial.println("Unknown Variable Identifier, check the variable identifier in the dashboard.");
+        Serial.println("Warning: - Don't use the variable name, use the variable identifier");
+        Serial.println("         - Variable identifier is case sensitive");
+      }
       else
         Serial.println("Failed to push data!!");
       submit_data_response = "";
