@@ -2,8 +2,7 @@
 
 # Room Monitoring - ESP32+DHT (mqtt)
 
-
-This Arduino sketch allows you to connect your device to a WiFi network and send data to a server. It fetches the server time and sends data to the anedya.
+This Arduino sketch allows you to connect your device to a WiFi network, sync device time and send data to Anedya.
 
 > [!WARNING]
 > This code is for hobbyists for learning purposes. Not recommended for production use!!
@@ -36,8 +35,8 @@ To send hardware sensor value `virtual_Sensor = false`
 
 ### Code Set-Up
 
-1. Replace `<PHYSICAL-DEVICE-UUID>` with your 128-bit UUID of the physical device.
-2. Replace `<CONNECTION-KEY>` with your connection key, which you can obtain from the node description.
+1. Replace `REPLACE_WITH_YOUR_PHYSICAL_DEVICE_ID` with your 128-bit UUID of the physical device.
+2. Replace `REPLACE_WITH_YOUR_CONNECTION_KEY` with your connection key, which you can obtain from the node description.
 3. Set up your WiFi credentials by replacing `REPLACE_WITH_YOUR_SSID` and `REPLACE_WITH_YOUR_PASSWORD` with your WiFi network's SSID and password.
 4. Specify the pin number connected to the DHT sensor.
 
@@ -89,7 +88,7 @@ To include the DHT library in your project:
 6. Once installed, you can include the library in your Arduino sketches by adding `#include <DHT.h>` at the top of your sketch.
 
 > [!TIP]
-> Looking for Python SDK? Visit [PyPi](https://pypi.org/project/anedya-dev-sdk/) or [Github Repository](https://github.com/anedyaio/anedya-dev-sdk-pyhton)
+> Looking for Python SDK? Visit [PyPi](https://pypi.org/project/anedya-dev-sdk/) or [Github Repository](https://github.com/anedyaio/anedya-dev-sdk-python)
 
 >[!TIP]
 > For more information, visit [anedya.io](https://anedya.io/?utm_source=github&utm_medium=link&utm_campaign=github-examples&utm_content=esp32)
