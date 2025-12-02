@@ -5,7 +5,7 @@
                             # Dashboard Setup
                              - Create account and login to the dashboard
                              - Create new project.
-                             - Create variables: temperature and humidity.
+                             - Create variables: power and energy.
                              - Create a parent node (e.g., Gateway Node) and pre-authorize it.
                              - Create a child node (e.g., Child Node 1).
                              - Goto parent node->child nodes->add a Child Node with(Child Node ID and Alias)
@@ -41,7 +41,7 @@ const char *PHYSICAL_DEVICE_ID = "REPLACE_WITH_YOUR_PHYSICAL_DEVICE_ID"; // Fill
 const char *SSID = "REPLACE_WITH_YOUR_SSID";
 const char *PASSWORD = "REPLACE_WITH_YOUR_PASSWORD";
 String REGION_CODE = "ap-in-1"; // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India)
-                                // For other country code, visity [https://docs.anedya.io/device/#region]
+                                // For other country code, visit [https://docs.anedya.io/device/#region]
 
 // Anedya Root CA 3 (ECC - 256)(Pem format)| [https://docs.anedya.io/device/mqtt-endpoints/#tls]
 const char *ca_cert = R"EOF(                           
@@ -75,13 +75,10 @@ String errorTopic = "$anedya/device/" + String(PHYSICAL_DEVICE_ID) + "/errors"; 
 #define SUBMIT_GATEWAY_DATA 3
 
 String heartbeat_response, submit_data_response, submit_gateway_data_response; // variable to handle response
-float temperature;
-float humidity;
-
 typedef struct
 {
-    float temperature;
-    float humidity;
+    float power;
+    float energy;
 } sensors_data_t;
 
 #define NUMBER_OF_SLAVES 2
@@ -170,6 +167,7 @@ void mqttCallback(char *topic, byte *payload, unsigned int length)
         break;
     case SUBMIT_GATEWAY_DATA:
         submit_gateway_data_response = res_str;
+        break;
     default:
         Serial.print("Unknown Response Received: ");
         Serial.println(res_str);
@@ -201,26 +199,26 @@ void loop()
 {
     anedya_sendHeartbeat(); // send heartbeat to the Anedya let it know that the device is online
 
-    // Generate random temperature and humidity values
+    // Generate random power and energy values
     for (int i = 0; i < NUMBER_OF_SLAVES; i++)
     {
-        child[i].temperature = random(20, 30);
-        child[i].humidity = random(60, 80);
+        child[i].power = random(20, 30);
+        child[i].energy = random(60, 80);
     }
 
     for (int i = 0; i < NUMBER_OF_SLAVES; i++)
     {
         String childAlias = "child" + String(i + 1);
 
-        // Submit temperature data to Anedya cloud
-        Serial.print("Child " + String(i + 1) + " :: Temperature : ");
-        Serial.println(child[i].temperature);
-        anedya_submit_gatewayData("temperature", child[i].temperature, childAlias); // submit data to the Anedya
+        // Submit power data to Anedya cloud
+        Serial.print("Child " + String(i + 1) + " :: Power : ");
+        Serial.println(child[i].power);
+        anedya_submit_gatewayData("power", child[i].power, childAlias); // submit data to the Anedya
 
-        // Submit humidity data to Anedya cloud
-        Serial.print("Child " + String(i + 1) + " :: Humidity : ");
-        Serial.println(child[i].humidity);
-        anedya_submit_gatewayData("humidity", child[i].humidity, childAlias); // submit data to the Anedya
+        // Submit energy data to Anedya cloud
+        Serial.print("Child " + String(i + 1) + " :: Energy : ");
+        Serial.println(child[i].energy);
+        anedya_submit_gatewayData("energy", child[i].energy, childAlias); // submit data to the Anedya
         delay(1000);
     }
     Serial.println("---------------------------------------------------");

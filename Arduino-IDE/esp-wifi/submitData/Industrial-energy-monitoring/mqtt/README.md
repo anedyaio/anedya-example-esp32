@@ -13,10 +13,11 @@ Following steps outline the overall steps to setup a project. You can read more 
 
 1. Create account and login to the dashboard
 2. Create new project.
-3. Create variables: temperature and humidity.
+3. Create variables: power and energy.
 4. Create a parent node (e.g., Gateway Node) and pre-authorize it.
 5. Create a child node (e.g., Child Node 1).
-6. Goto parent node->child nodes->add a Child Node with(Child Node ID 1 + Child Node 2 and Alias(child1))
+6. Go to the parent node's 'Child Nodes' tab. Add 'Child Node 1' with alias 'child1'.
+7. Add 'Child Node 2' with alias 'child2'.
 
 > [!IMPORTANT]
 > Variable Identifier is essential; fill it accurately.
@@ -27,7 +28,6 @@ Following steps outline the overall steps to setup a project. You can read more 
 1. Replace `REPLACE_WITH_YOUR_PHYSICAL_DEVICE_ID` with your 128-bit UUID of the physical device.
 2. Replace `REPLACE_WITH_YOUR_CONNECTION_KEY` with your connection key, which you can obtain from the node description.
 3. Set up your WiFi credentials by replacing `REPLACE_WITH_YOUR_SSID` and `REPLACE_WITH_YOUR_PASSWORD` with your WiFi network's SSID and password.
-4. Specify the pin number connected to the DHT sensor.
 
 > [!NOTE] 
 > This example utilizes `Anedya Root CA 3 (ECC - 256)(Pem format)` for establishing a secure connection to the Anedya. If you opt to use an `Anedya Root CA 1 (RSA - 2048)` certificate instead, please ensure that you provide the necessary additional certificate details regarding the RSA certificate before initiating the connection.
@@ -37,7 +37,7 @@ Following steps outline the overall steps to setup a project. You can read more 
 1. Connect your device to a WiFi network.
 2. Upload this code to your device.
 3. Open the Serial Monitor to view the device's output.
-4. The device will connect to the WiFi network, generate the temperature and humidity data and start sending data to the Anedya.
+4. The device will connect to the WiFi network, generate the power and energy data and start sending data to the Anedya.
 
 ## Dependencies
 
@@ -63,7 +63,7 @@ The PubSubClient library provides a client for doing simple publish/subscribe me
 6. Once installed, you can include the library in your Arduino sketches by adding `#include <PubSubClient.h>` at the top of your sketch.
 
 > [!TIP]
-> Looking for Python SDK? Visit [PyPi](https://pypi.org/project/anedya-dev-sdk/) or [Github Repository](https://github.com/anedyaio/anedya-dev-sdk-pyhton)
+> Looking for Python SDK? Visit [PyPi](https://pypi.org/project/anedya-dev-sdk/) or [Github Repository](https://github.com/anedyaio/anedya-dev-sdk-python)
 
 >[!TIP]
 > For more information, visit [anedya.io](https://anedya.io/?utm_source=github&utm_medium=link&utm_campaign=github-examples&utm_content=esp32)

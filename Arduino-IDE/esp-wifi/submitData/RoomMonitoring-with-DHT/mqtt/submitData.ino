@@ -38,7 +38,7 @@ const char *PHYSICAL_DEVICE_ID = "REPLACE_WITH_YOUR_PHYSICAL_DEVICE_ID"; // Fill
 const char *SSID = "REPLACE_WITH_YOUR_SSID";
 const char *PASSWORD = "REPLACE_WITH_YOUR_PASSWORD";
 String REGION_CODE = "ap-in-1"; // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India)
-                                // For other country code, visity [https://docs.anedya.io/device/#region]
+                                // For other country code, visit [https://docs.anedya.io/device/#region]
 
 // Anedya Root CA 3 (ECC - 256)(Pem format)| [https://docs.anedya.io/device/mqtt-endpoints/#tls]
 const char *ca_cert = R"EOF(                           
