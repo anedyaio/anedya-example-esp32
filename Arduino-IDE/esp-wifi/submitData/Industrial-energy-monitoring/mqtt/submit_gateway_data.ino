@@ -5,7 +5,7 @@
                             # Dashboard Setup
                              - Create account and login to the dashboard
                              - Create new project.
-                             - Create variables: temperature and humidity.
+                             - Create variables: power and energy.
                              - Create a parent node (e.g., Gateway Node) and pre-authorize it.
                              - Create a child node (e.g., Child Node 1).
                              - Goto parent node->child nodes->add a Child Node with(Child Node ID and Alias)
@@ -36,10 +36,10 @@ bool virtual_sensor = true; //(This is true if you don't have a physical sensor)
 #include <ArduinoJson.h>      // Include the Arduino library to make json or abstract the value from the json
 
 // ----------------------------- Anedya and Wifi credentials --------------------------------------------
-const char *CONNECTION_KEY = "REPLACE_WITH_YOUR_CONNECTION_KEY";         // Fill your connection key, that you can get from your node description
-const char *PHYSICAL_DEVICE_ID = "REPLACE_WITH_YOUR_PHYSICAL_DEVICE_ID"; // Fill your device Id , that you can get from your node description
-const char *SSID = "REPLACE_WITH_YOUR_SSID";
-const char *PASSWORD = "REPLACE_WITH_YOUR_PASSWORD";
+const char *CONNECTION_KEY = "98a7ebaa32d0f697cdab286440c83e4c";         // Fill your connection key, that you can get from your node description
+const char *PHYSICAL_DEVICE_ID = "accdcae7-f223-4b5d-8275-3257508ee63b"; // Fill your device Id , that you can get from your node description
+const char *SSID = "Invesun_2.4Ghz";
+const char *PASSWORD = "Invesun123com#";
 String REGION_CODE = "ap-in-1"; // Anedya region code (e.g., "ap-in-1" for Asia-Pacific/India)
                                 // For other country code, visit [https://docs.anedya.io/device/#region]
 
@@ -75,13 +75,10 @@ String errorTopic = "$anedya/device/" + String(PHYSICAL_DEVICE_ID) + "/errors"; 
 #define SUBMIT_GATEWAY_DATA 3
 
 String heartbeat_response, submit_data_response, submit_gateway_data_response; // variable to handle response
-float temperature;
-float humidity;
-
 typedef struct
 {
-    float temperature;
-    float humidity;
+    float power;
+    float energy;
 } sensors_data_t;
 
 #define NUMBER_OF_SLAVES 2
@@ -202,26 +199,26 @@ void loop()
 {
     anedya_sendHeartbeat(); // send heartbeat to the Anedya let it know that the device is online
 
-    // Generate random temperature and humidity values
+    // Generate random power and energy values
     for (int i = 0; i < NUMBER_OF_SLAVES; i++)
     {
-        child[i].temperature = random(20, 30);
-        child[i].humidity = random(60, 80);
+        child[i].power = random(20, 30);
+        child[i].energy = random(60, 80);
     }
 
     for (int i = 0; i < NUMBER_OF_SLAVES; i++)
     {
         String childAlias = "child" + String(i + 1);
 
-        // Submit temperature data to Anedya cloud
-        Serial.print("Child " + String(i + 1) + " :: Temperature : ");
-        Serial.println(child[i].temperature);
-        anedya_submit_gatewayData("temperature", child[i].temperature, childAlias); // submit data to the Anedya
+        // Submit power data to Anedya cloud
+        Serial.print("Child " + String(i + 1) + " :: Power : ");
+        Serial.println(child[i].power);
+        anedya_submit_gatewayData("power", child[i].power, childAlias); // submit data to the Anedya
 
-        // Submit humidity data to Anedya cloud
-        Serial.print("Child " + String(i + 1) + " :: Humidity : ");
-        Serial.println(child[i].humidity);
-        anedya_submit_gatewayData("humidity", child[i].humidity, childAlias); // submit data to the Anedya
+        // Submit energy data to Anedya cloud
+        Serial.print("Child " + String(i + 1) + " :: Energy : ");
+        Serial.println(child[i].energy);
+        anedya_submit_gatewayData("energy", child[i].energy, childAlias); // submit data to the Anedya
         delay(1000);
     }
     Serial.println("---------------------------------------------------");

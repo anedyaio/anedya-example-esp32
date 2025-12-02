@@ -13,7 +13,7 @@ Following steps outline the overall steps to setup a project. You can read more 
 
 1. Create account and login to the dashboard
 2. Create new project.
-3. Create variables: temperature and humidity.
+3. Create variables: power and energy.
 4. Create a parent node (e.g., Gateway Node) and pre-authorize it.
 5. Create a child node (e.g., Child Node 1).
 6. Go to the parent node's 'Child Nodes' tab. Add 'Child Node 1' with alias 'child1'.
@@ -37,7 +37,7 @@ Following steps outline the overall steps to setup a project. You can read more 
 1. Connect your device to a WiFi network.
 2. Upload this code to your device.
 3. Open the Serial Monitor to view the device's output.
-4. The device will connect to the WiFi network, generate the temperature and humidity data and start sending data to the Anedya.
+4. The device will connect to the WiFi network, generate the power and energy data and start sending data to the Anedya.
 
 ## Dependencies
 
