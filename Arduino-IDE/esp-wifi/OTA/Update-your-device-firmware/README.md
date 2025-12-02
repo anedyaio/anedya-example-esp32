@@ -12,7 +12,7 @@ Using Anedya, you can deploy and manage OTA Updates for thousands of devices. Yo
 > For a detailed overview of the Anedya OTA service, including its features and how it works, visit [Anedya OTA Documentation](https://docs.anedya.io/features/ota/)
 
 > [!TIP]
-> Looking for Python SDK? Visit [PyPi](https://pypi.org/project/anedya-dev-sdk/) or [Github Repository](https://github.com/anedyaio/anedya-dev-sdk-pyhton)
+> Looking for Python SDK? Visit [PyPi](https://pypi.org/project/anedya-dev-sdk/) or [Github Repository](https://github.com/anedyaio/anedya-dev-sdk-python)
 
 >[!TIP]
 > For more information, visit [anedya.io](https://anedya.io/?utm_source=github&utm_medium=link&utm_campaign=github-examples&utm_content=esp32)
